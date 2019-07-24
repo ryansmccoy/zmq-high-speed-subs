@@ -4,8 +4,11 @@ ZeroMQ - High-Speed Subscribers
 
 Example of High-Speed Subscriber Patterns in ZeroMQ
 
-.. figure:: https://raw.githubusercontent.com/ryansmccoy/zmq-high-speed/master/docs/fig56.png
+.. image:: https://raw.githubusercontent.com/ryansmccoy/zmq-high-speed/master/docs/fig56.png
+    :width: 700px
     :align: center
+    :height: 500px
+    :alt: The Simple Black Box Pattern
 
 * ZeroMQ Guide: http://zguide.zeromq.org/py:chapter5#toc5
 
