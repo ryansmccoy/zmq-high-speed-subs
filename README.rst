@@ -14,11 +14,9 @@ ZeroMQ - High-Speed Subscribers
         :alt: Documentation Status
 
 
-
-
 Examples of High-Speed Subscriber Patterns in ZeroMQ
 
-.. image:: docs/fig56.png
+    python zmq_high_speed/00_publish_data_feed.py
 
 
 
