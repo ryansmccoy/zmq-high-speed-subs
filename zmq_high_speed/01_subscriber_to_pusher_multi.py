@@ -36,7 +36,6 @@ class ZMQSubscriber(multiprocessing.Process):
             if message[0:4] == "stop":
                 sys.exit(1)
 
-
 class ZMQPusher(multiprocessing.Process):
     def __init__(self, queue, port="5559"):
         self.queue = queue
@@ -64,6 +63,7 @@ class ZMQPusher(multiprocessing.Process):
             self.counter += 1
             self.counter_print += 1
 
+            # print stats every 5000 messages
             if self.counter_print >= 5000:
                 print(f'\n[INFO/ZMQPusher] ->'
                       f'\t {datetime.datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")}')
@@ -74,6 +74,7 @@ class ZMQPusher(multiprocessing.Process):
                 print(f"The size of queue is {self.queue.qsize()}")
                 self.counter_print = 0
 
+            # shutdown if receive stop message
             if message[0:4] == "stop":
                 self.end_time = datetime.datetime.now()
                 # the producer emits None to indicate that it is done

@@ -5,23 +5,18 @@ Copyright (C) 2019 Ryan S. McCoy <github@ryansmccoy.com>
 MIT License
 
 """
-
-from datetime import datetime
-import zmq
-import os
-from multiprocessing import current_process
-from multiprocessing import Process, Queue
 import time
 import random
+from datetime import datetime
+import os
+from multiprocessing import current_process
+from multiprocessing import Process
 
-inputqueue = Queue()
-job_queue = Queue()
-result_queue = Queue()
+import zmq
 
 def worker():
     """
     Starts worker that connects to the Pusher
-    :return:
     """
     pid = os.getpid()
 
@@ -46,7 +41,7 @@ def worker():
 
         if first_message:
             time_start = time.time()
-            start_time =datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")
+            start_time = datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")
             print(f'\nStarting \t{start_time}')
             first_message = False
 
@@ -59,7 +54,6 @@ def worker():
             print(last_message + f'\n\n{datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")}')
             break
 
-
     time_end = time.time()
     total_time = time_end - time_start
     time.sleep(random.choice(range(10)))
@@ -71,9 +65,8 @@ def worker():
 
 if __name__ == "__main__":
 
-    num_workers = 4
-
     workers = {}
+    num_workers = 4
 
     for x in range(num_workers):
         workers[x] = Process(name=f"Process {x + 1}",target=worker, args=())
