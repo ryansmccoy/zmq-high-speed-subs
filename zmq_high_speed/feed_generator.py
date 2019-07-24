@@ -5,8 +5,9 @@ import pandas as pd
 
 
 class FakeFeed:
-    def __init__(self, filepath=f'zmq_high_speed/test_data.csv'):
+    def __init__(self, sleep_time: (int or float) = 1, filepath=f'zmq_high_speed/test_data.csv'):
         self.filepath = filepath
+        self.sleep_time = sleep_time
 
     def __iter__(self):
         df = pd.read_csv(self.filepath)
@@ -14,6 +15,6 @@ class FakeFeed:
         counter = 0
         for idx, num in cycle(df.iterrows()):
             counter += 1
-            msg = f"{counter}," + ",".join(list(num.astype(str).to_dict().values()))
+            msg = f"{counter},    " + ",".join(list(num.astype(str).to_dict().values()))
             yield msg
-            time.sleep(1)
+            time.sleep(self.sleep_time)
