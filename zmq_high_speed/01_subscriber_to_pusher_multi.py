@@ -1,8 +1,10 @@
-import time
 import datetime
-import sys
 import multiprocessing
+import sys
+import time
+
 import zmq
+
 
 class ZMQSubscriber(multiprocessing.Process):
     def __init__(self, queue, port="5558"):
@@ -56,8 +58,12 @@ class ZMQPusher(multiprocessing.Process):
             self.counter_print += 1
 
             if self.counter_print >= 5000:
-                print(f'\n[INFO/ZMQPusher] ->\t {datetime.datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")}')
-                print(f"\n[INFO/ZMQPusher] ->\t {message[0:100]}")
+                print(f'\n[INFO/ZMQPusher] ->'
+                      f'\t {datetime.datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")}')
+
+                print(f"\n[INFO/ZMQPusher] ->"
+                      f"\t {message[0:100]}")
+
                 print(f"The size of queue is {self.queue.qsize()}")
                 self.counter_print = 0
 
@@ -69,11 +75,14 @@ class ZMQPusher(multiprocessing.Process):
                 print(f'\nStart Time:\t{self.start_time}')
                 time_end = time.time()
                 total_time = time_end - time_start
-                print(f'\n\tTime Elapsed:\t{round(total_time,2)} seconds\n\tTotal Messages:\t{self.counter}\n \tMessages Per Second:\t{round(self.counter/total_time,3)}\n')
+                print(f'\n\tTime Elapsed:\t{round(total_time, 2)} seconds'
+                      f'\n\tTotal Messages:\t{self.counter}\n'
+                      f'\tMessages Per Second:\t{round(self.counter / total_time, 3)}\n')
 
                 self.push_socket.close()
                 self.ctx.term()
                 sys.exit(1)
+
 
 if __name__ == "__main__":
 

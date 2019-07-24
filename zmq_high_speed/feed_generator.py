@@ -1,10 +1,9 @@
 import time
 from itertools import cycle
-
 import pandas as pd
 
-
 class FakeFeed:
+    """Generates a Repeating Feed of Data for Benchmarking/Testing"""
     def __init__(self, sleep_time: (int or float) = 1, filepath=f'zmq_high_speed/test_data.csv'):
         self.filepath = filepath
         self.sleep_time = sleep_time

@@ -4,11 +4,11 @@ import os
 from multiprocessing import current_process
 from multiprocessing import Process, Queue
 import time
+import random
 
 inputqueue = Queue()
 job_queue = Queue()
 result_queue = Queue()
-
 
 def worker():
     """
@@ -21,7 +21,7 @@ def worker():
     counter_print = 0
 
     pname = current_process().name
-    print(f"\n\t[INFO/{pname}-pid:{pid}]\tWaiting for First Message")
+    print(f"\n\t[INFO/{pname}-pid:{pid}]\tSpawning Worker")
 
     context = zmq.Context()
     work_receiver = context.socket(zmq.PULL)
@@ -43,7 +43,7 @@ def worker():
             first_message = False
 
         if counter_print >= 5000:
-            print(f"\n\n[INFO/{pname}-pid:{pid}] ->\t {message[0:100]}")
+            print(f"\n\n[INFO/{pname}-pid:{pid}] ->\t {message[0:25]}")
             counter_print = 0
 
         if message[0:4] == "stop":
@@ -53,7 +53,12 @@ def worker():
 
     time_end = time.time()
     total_time = time_end - time_start
-    print(f'\n\nTime Elapsed:\t{round(total_time, 2)} seconds \tMessages Per Second:\t{counter / total_time}\n')
+    time.sleep(random.choice(range(10)))
+
+    print(f'\n\t[INFO/{pname}-pid:{pid}]\tTime Elapsed:\t{round(total_time, 2)} seconds'
+          f'\n\t[INFO/{pname}-pid:{pid}]\tTotal Messages:\t{counter}'
+          f'\n\t[INFO/{pname}-pid:{pid}]\tMessages Per Second:\t{round(counter / total_time, 3)}\n')
+
 
 if __name__ == "__main__":
 

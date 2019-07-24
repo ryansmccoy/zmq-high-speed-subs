@@ -57,11 +57,29 @@ To run, open seperate terminal windows, run each from the main directory:
 
 .. code-block:: bash
 
-    python zmq_high_speed/02_pull_to_workers.py
+    $ python zmq_high_speed/02_pull_to_workers.py
 
+        [INFO/Process 1-pid:51780]      Spawning Worker 1
+        [INFO/Process 2-pid:47856]      Spawning Worker 2
+        [INFO/Process 3-pid:29372]      Spawning Worker 3
+        [INFO/Process 4-pid:38376]      Spawning Worker 4
 
+        [INFO/Process 1-pid:51780]      Time Elapsed:   14.72 seconds
+        [INFO/Process 1-pid:51780]      Total Messages: 19628
+        [INFO/Process 1-pid:51780]      Messages Per Second:    1333.159
 
-Shutting Down...
+        [INFO/Process 3-pid:29372]      Time Elapsed:   14.72 seconds
+        [INFO/Process 3-pid:29372]      Total Messages: 19627
+        [INFO/Process 3-pid:29372]      Messages Per Second:    1333.091
+
+        [INFO/Process 4-pid:38376]      Time Elapsed:   14.72 seconds
+        [INFO/Process 4-pid:38376]      Total Messages: 19627
+        [INFO/Process 4-pid:38376]      Messages Per Second:    1333.544
+
+        [INFO/Process 2-pid:47856]      Time Elapsed:   14.72 seconds
+        [INFO/Process 2-pid:47856]      Total Messages: 19628
+        [INFO/Process 2-pid:47856]      Messages Per Second:    1333.159
+
 
 * Free software: MIT license
 * Documentation: https://zmq-high-speed.readthedocs.io.
