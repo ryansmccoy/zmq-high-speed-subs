@@ -1,3 +1,11 @@
+"""
+
+Copyright (C) 2019 Ryan S. McCoy <github@ryansmccoy.com>
+
+MIT License
+
+"""
+
 import datetime
 import time
 from datetime import datetime

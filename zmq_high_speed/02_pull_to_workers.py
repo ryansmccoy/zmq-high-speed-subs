@@ -1,3 +1,11 @@
+"""
+
+Copyright (C) 2019 Ryan S. McCoy <github@ryansmccoy.com>
+
+MIT License
+
+"""
+
 from datetime import datetime
 import zmq
 import os
@@ -51,6 +59,7 @@ def worker():
             print(last_message + f'\n\n{datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")}')
             break
 
+
     time_end = time.time()
     total_time = time_end - time_start
     time.sleep(random.choice(range(10)))
@@ -65,7 +74,6 @@ if __name__ == "__main__":
     num_workers = 4
 
     workers = {}
-    count = 100000
 
     for x in range(num_workers):
         workers[x] = Process(name=f"Process {x + 1}",target=worker, args=())

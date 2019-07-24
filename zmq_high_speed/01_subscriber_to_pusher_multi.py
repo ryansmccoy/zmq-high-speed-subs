@@ -1,10 +1,17 @@
+"""
+
+Copyright (C) 2019 Ryan S. McCoy <github@ryansmccoy.com>
+
+MIT License
+
+"""
+
 import datetime
 import multiprocessing
 import sys
 import time
 
 import zmq
-
 
 class ZMQSubscriber(multiprocessing.Process):
     def __init__(self, queue, port="5558"):

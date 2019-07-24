@@ -1,3 +1,11 @@
+"""
+
+Copyright (C) 2019 Ryan S. McCoy <github@ryansmccoy.com>
+
+MIT License
+
+"""
+
 import time
 from itertools import cycle
 import pandas as pd
