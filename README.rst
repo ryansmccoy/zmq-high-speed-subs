@@ -2,10 +2,10 @@
 ZeroMQ - High-Speed Subscribers
 ===============================
 
-.. image:: https://raw.githubusercontent.com/ryansmccoy/zmq-high-speed/master/docs/fig56.png
-    :align: center
-
 Example of High-Speed Subscriber Patterns in ZeroMQ
+
+.. figure:: https://raw.githubusercontent.com/ryansmccoy/zmq-high-speed/master/docs/fig56.png
+    :align: center
 
 * ZeroMQ Guide: http://zguide.zeromq.org/py:chapter5#toc5
 
