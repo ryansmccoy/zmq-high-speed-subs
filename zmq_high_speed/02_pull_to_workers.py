@@ -3,6 +3,10 @@ import os
 from multiprocessing import Process, current_process
 
 def worker():
+    """
+    Starts worker that connects to the Pusher
+    :return:
+    """
     pname = current_process().name
 
     pid = os.getpid()
