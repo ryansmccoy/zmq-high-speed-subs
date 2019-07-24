@@ -7,6 +7,7 @@ ZeroMQ - High-Speed Subscribers
 
 Example of High-Speed Subscriber Patterns in ZeroMQ
 
+* ZeroMQ Guide: http://zguide.zeromq.org/py:chapter5#toc5
 
 Setup Environment & Run Example  (Windows):
 
