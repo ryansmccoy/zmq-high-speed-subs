@@ -7,25 +7,30 @@ ZeroMQ - High-Speed Subscribers
 
 Example of High-Speed Subscriber Patterns in ZeroMQ
 
-Quick Start Guides
 
 Setup Environment & Run Example  (Windows):
 
-    $ git clone https://github.com/ryansmccoy/zmq-high-speed
-    $ cd zmq-high-speed
-    $ conda create -n zmq-high-speed python=3.7
-    $ activate zmq-high-speed
-    $ pip install -r requirements.txt
+.. code-block:: batch
 
-#### Setup Environment & Run Example (Linux):
+    git clone https://github.com/ryansmccoy/zmq-high-speed
+    cd zmq-high-speed
+    conda create -n zmq-high-speed python=3.7 -y
+    activate zmq-high-speed
+    pip install -r requirements.txt
 
-    $ git clone https://github.com/ryansmccoy/zmq-high-speed
-    $ cd zmq-high-speed
-    $ conda create -n zmq-high-speed python=3.7
-    $ activate zmq-high-speed
-    $ pip install -r requirements.txt
+Setup Environment & Run Example (Linux):
+
+.. code-block:: batch
+
+    git clone https://github.com/ryansmccoy/zmq-high-speed
+    cd zmq-high-speed
+    conda create -n zmq-high-speed python=3.7 -y
+    activate zmq-high-speed
+    pip install -r requirements.txt
 
 To run, open seperate terminal windows, run from the main directory:
+
+.. code-block:: bash
 
     python zmq_high_speed/00_publish_data_feed.py
 
