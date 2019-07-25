@@ -45,7 +45,7 @@ def worker():
             print(f'\nStarting \t{start_time}')
             first_message = False
 
-        if counter_print >= 5000:
+        if counter_print >= 20000:
             print(f"\n\n[INFO/{pname}-pid:{pid}] ->\t {message[0:25]}")
             counter_print = 0
 

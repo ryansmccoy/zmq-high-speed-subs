@@ -43,8 +43,8 @@ To run, open seperate terminal windows, run each from the main directory:
     run,07-24-2019_06:03:07:639177,70000,    Q,EEQT,nan,298.49,nan,5,1000,03:02.9,nan,nan,298.45,0.02,11
 
     Time Elapsed:   15.0 seconds
-    Total Messages: 74907
-    Messages Per Second:    4993.573
+    Total Messages: 74,907
+    Messages Per Second:    4,993.57
 
 
 .. code-block:: bash
