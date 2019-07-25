@@ -31,36 +31,45 @@ Setup Environment & Run Example (Linux):
     conda create -n zeromq-high-speed-subscribers python=3.7 -y
     pip install -r requirements.txt
 
-To run, open seperate terminal windows, run each from the main directory:
+To run, open seperate terminal windows, run:
+
+Publisher
 
 .. code-block:: bash
 
     $ activate zeromq-high-speed-subscribers
     $ python zeromq-high-speed-subscribers/00_publish_data_feed.py
 
-    Starting        07-24-2019_06:02:53:926534,
-    run,07-24-2019_06:02:54:935560,5000,    Q,EES,nan,1994.4,nan,11,200,03:02.2,nan,nan,1990.0,-0.45,5,1
-    run,07-24-2019_06:03:07:639177,70000,    Q,EEQT,nan,298.49,nan,5,1000,03:02.9,nan,nan,298.45,0.02,11
+    Output:
 
-    Time Elapsed:   15.0 seconds
-    Total Messages: 74,907
-    Messages Per Second:    4,993.57
+        Starting        07-24-2019_06:02:53:926534,
+        run,07-24-2019_06:02:54:935560,5000,    Q,EES,nan,1994.4,nan,11,200,03:02.2,nan,nan,1990.0,-0.45,5,1
+        run,07-24-2019_06:03:07:639177,70000,    Q,EEQT,nan,298.49,nan,5,1000,03:02.9,nan,nan,298.45,0.02,11
 
+        Time Elapsed:   15.0 seconds
+        Total Messages: 74,907
+        Messages Per Second:    4,993.57
+
+Subscriber-to-Pusher
 
 .. code-block:: bash
 
     $ activate zeromq-high-speed-subscribers
     $ python zeromq-high-speed-subscribers/01_subscriber_to_pusher_multi.py
 
+    Output:
         Time Elapsed:   17.08 seconds
         Total Messages: 76216
         Messages Per Second:    4463.351
+
+Pull-to-Workers
 
 .. code-block:: bash
 
     $ activate zeromq-high-speed-subscribers
     $ python zeromq-high-speed-subscribers/02_pull_to_workers.py
 
+    Output:
         [INFO/Process 1-pid:51780]      Spawning Worker 1
         [INFO/Process 2-pid:47856]      Spawning Worker 2
         [INFO/Process 3-pid:29372]      Spawning Worker 3
