@@ -17,9 +17,9 @@ Setup Environment & Run Example  (Windows):
 .. code-block:: batch
 
     git clone https://github.com/ryansmccoy/zeromq-high-speed-subscribers
-    cd zmq-high-speed
-    conda create -n zmq-high-speed python=3.7 -y
-    activate zmq-high-speed
+    cd zeromq-high-speed-subscribers
+    conda create -n zeromq-high-speed-subscribers python=3.7 -y
+    activate zeromq-high-speed-subscribers
     pip install -r requirements.txt
 
 Setup Environment & Run Example (Linux):
@@ -27,15 +27,15 @@ Setup Environment & Run Example (Linux):
 .. code-block:: batch
 
     git clone https://github.com/ryansmccoy/zeromq-high-speed-subscribers  
-    cd zmq-high-speed
-    conda create -n zmq-high-speed python=3.7 -y
-    activate zmq-high-speed
+    cd zeromq-high-speed-subscribers
+    conda create -n zeromq-high-speed-subscribers python=3.7 -y
     pip install -r requirements.txt
 
 To run, open seperate terminal windows, run each from the main directory:
 
 .. code-block:: bash
 
+    $ activate zeromq-high-speed-subscribers
     $ python zeromq-high-speed-subscribers/00_publish_data_feed.py
 
     Starting        07-24-2019_06:02:53:926534,
@@ -49,6 +49,7 @@ To run, open seperate terminal windows, run each from the main directory:
 
 .. code-block:: bash
 
+    $ activate zeromq-high-speed-subscribers
     $ python zeromq-high-speed-subscribers/01_subscriber_to_pusher_multi.py
 
         Time Elapsed:   17.08 seconds
@@ -57,6 +58,7 @@ To run, open seperate terminal windows, run each from the main directory:
 
 .. code-block:: bash
 
+    $ activate zeromq-high-speed-subscribers
     $ python zeromq-high-speed-subscribers/02_pull_to_workers.py
 
         [INFO/Process 1-pid:51780]      Spawning Worker 1
