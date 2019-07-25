@@ -4,7 +4,7 @@ ZeroMQ - High-Speed Subscribers
 
 Example of High-Speed Subscriber Patterns in ZeroMQ
 
-.. image:: https://raw.githubusercontent.com/ryansmccoy/zmq-high-speed/master/docs/fig56.png
+.. image:: https://raw.githubusercontent.com/ryansmccoy/zeromq-high-speed-subscribers/master/docs/fig56.png    
     :width: 700px
     :align: center
     :height: 500px
@@ -16,7 +16,7 @@ Setup Environment & Run Example  (Windows):
 
 .. code-block:: batch
 
-    git clone https://github.com/ryansmccoy/zmq-high-speed
+    git clone https://github.com/ryansmccoy/zeromq-high-speed-subscribers
     cd zmq-high-speed
     conda create -n zmq-high-speed python=3.7 -y
     activate zmq-high-speed
@@ -26,7 +26,7 @@ Setup Environment & Run Example (Linux):
 
 .. code-block:: batch
 
-    git clone https://github.com/ryansmccoy/zmq-high-speed
+    git clone https://github.com/ryansmccoy/zeromq-high-speed-subscribers  
     cd zmq-high-speed
     conda create -n zmq-high-speed python=3.7 -y
     activate zmq-high-speed
@@ -36,7 +36,7 @@ To run, open seperate terminal windows, run each from the main directory:
 
 .. code-block:: bash
 
-    $ python zmq_high_speed/00_publish_data_feed.py
+    $ python zeromq-high-speed-subscribers/00_publish_data_feed.py
 
     Starting        07-24-2019_06:02:53:926534,
     run,07-24-2019_06:02:54:935560,5000,    Q,EES,nan,1994.4,nan,11,200,03:02.2,nan,nan,1990.0,-0.45,5,1
@@ -49,7 +49,7 @@ To run, open seperate terminal windows, run each from the main directory:
 
 .. code-block:: bash
 
-    $ python zmq_high_speed/01_subscriber_to_pusher_multi.py
+    $ python zeromq-high-speed-subscribers/01_subscriber_to_pusher_multi.py
 
         Time Elapsed:   17.08 seconds
         Total Messages: 76216
@@ -57,7 +57,7 @@ To run, open seperate terminal windows, run each from the main directory:
 
 .. code-block:: bash
 
-    $ python zmq_high_speed/02_pull_to_workers.py
+    $ python zeromq-high-speed-subscribers/02_pull_to_workers.py
 
         [INFO/Process 1-pid:51780]      Spawning Worker 1
         [INFO/Process 2-pid:47856]      Spawning Worker 2
@@ -82,5 +82,5 @@ To run, open seperate terminal windows, run each from the main directory:
 
 
 * Free software: MIT license
-* Documentation: https://zmq-high-speed.readthedocs.io.
+* Documentation: https://zeromq-high-speed-subscribers.readthedocs.io.
 
