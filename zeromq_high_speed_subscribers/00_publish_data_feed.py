@@ -11,6 +11,7 @@ import time
 from datetime import datetime
 
 import zmq
+import msgpack
 
 from utils import FakeFeed
 
@@ -39,8 +40,10 @@ def server_pub(port="5558"):
 
         for item in fakefeed:
             timestamp = datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")
+
             message = "run," + timestamp + item
-            socket.send_string("run," + timestamp + item)
+            packed = msgpack.packb(message)
+            socket.send(packed)
 
             counter_print += 1
             counter += 1
@@ -58,7 +61,8 @@ def server_pub(port="5558"):
 
                 for x in range(4):
                     shutdown = "stop," + timestamp
-                    socket.send_string(shutdown)
+                    packed = msgpack.packb(shutdown)
+                    socket.send(packed)
 
                 print("Shutting Down...")
                 end_time = datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")

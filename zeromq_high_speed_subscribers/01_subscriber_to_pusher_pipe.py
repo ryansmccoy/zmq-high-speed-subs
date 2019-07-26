@@ -9,7 +9,7 @@ import datetime
 import multiprocessing
 import logging.config
 import zmq
-
+import msgpack
 from utils import MessageChecker
 
 class ZMQSubscriber(multiprocessing.Process, MessageChecker):
@@ -31,11 +31,13 @@ class ZMQSubscriber(multiprocessing.Process, MessageChecker):
             zmq_socket.setsockopt(zmq.SNDHWM, 100000)
             zmq_socket.setsockopt(zmq.RCVHWM, 100000)
             zmq_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+            # zmq_socket.setsockopt(zmq.SUBSCRIBE, "")
             zmq_socket.connect(self.url)
 
             # receive message and pipe to other process
             while not self.stop_event.is_set():
-                message = zmq_socket.recv_string()
+                # message = zmq_socket.recv_string()
+                message = zmq_socket.recv()
 
                 if self.check_messages:
                     self.check_message(message)
@@ -58,8 +60,8 @@ class ZMQPusher(multiprocessing.Process, MessageChecker):
 
         ctx = zmq.Context()
         with ctx.socket(zmq.PUSH) as zmq_socket:
-            zmq_socket.setsockopt(zmq.SNDHWM, 100000)
-            zmq_socket.setsockopt(zmq.RCVHWM, 100000)
+            zmq_socket.setsockopt(zmq.SNDHWM, 10000)
+            zmq_socket.setsockopt(zmq.RCVHWM, 10000)
             zmq_socket.bind(self.url)
             while not self.stop_event.is_set():
 
@@ -70,11 +72,15 @@ class ZMQPusher(multiprocessing.Process, MessageChecker):
                 if self.check_messages:
                     self.check_message(message)
 
-                zmq_socket.send_string(message)
+                # zmq_socket.send_string(message)
+                zmq_socket.send(message)
 
             # send stop messages to potential workers
             for x in range(10):
-                zmq_socket.send_string(message)
+                # zmq_socket.send_string(message)
+                # zmq_socket.send(message)
+                zmq_socket.send(message)
+
 
 if __name__ == "__main__":
 
@@ -89,6 +95,7 @@ if __name__ == "__main__":
 
     process_subscriber.start()
     process_pusher.start()
+
 
     try:
         process_pusher.join()
