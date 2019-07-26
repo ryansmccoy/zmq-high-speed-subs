@@ -11,7 +11,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=6.0', ]
+requirements = ['Click>=6.0', 'pyzmq', 'pandas']
 
 setup_requirements = [ ]
 
@@ -36,20 +36,20 @@ setup(
     description="Examples of High-Speed Subscriber Patterns in ZeroMQ",
     entry_points={
         'console_scripts': [
-            'zmq_high_speed=zmq_high_speed.cli:main',
+            'zeromq_high_speed_subscribers=zeromq_high_speed_subscribers.cli:main',
         ],
     },
     install_requires=requirements,
     license="MIT license",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
-    keywords='zmq_high_speed',
-    name='zmq_high_speed',
-    packages=find_packages(include=['zmq_high_speed']),
+    keywords='zeromq_high_speed_subscribers',
+    name='zeromq_high_speed_subscribers',
+    packages=find_packages(include=['zeromq_high_speed_subscribers']),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/ryansmccoy/zmq_high_speed',
+    url='https://github.com/ryansmccoy/zeromq-high-speed-subscribers',
     version='0.1.0',
     zip_safe=False,
 )

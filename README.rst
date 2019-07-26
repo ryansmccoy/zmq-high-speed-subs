@@ -4,7 +4,7 @@ ZeroMQ - High-Speed Subscribers
 
 Example of High-Speed Subscriber Patterns in ZeroMQ
 
-.. image:: https://raw.githubusercontent.com/ryansmccoy/zeromq-high-speed-subscribers/master/docs/fig56.png    
+.. image:: https://raw.githubusercontent.com/ryansmccoy/zeromq-high-speed-subscribers/master/docs/fig56.png
     :width: 700px
     :align: center
     :height: 500px
@@ -26,7 +26,7 @@ Setup Environment & Run Example (Linux):
 
 .. code-block:: batch
 
-    git clone https://github.com/ryansmccoy/zeromq-high-speed-subscribers  
+    git clone https://github.com/ryansmccoy/zeromq-high-speed-subscribers
     cd zeromq-high-speed-subscribers
     conda create -n zeromq-high-speed-subscribers python=3.7 -y
     pip install -r requirements.txt
@@ -38,7 +38,7 @@ Publisher
 .. code-block:: bash
 
     $ activate zeromq-high-speed-subscribers
-    $ python zeromq-high-speed-subscribers/00_publish_data_feed.py
+    $ python zeromq_high_speed_subscribers/00_publish_data_feed.py
 
     Output:
 
@@ -55,7 +55,7 @@ Subscriber-to-Pusher
 .. code-block:: bash
 
     $ activate zeromq-high-speed-subscribers
-    $ python zeromq-high-speed-subscribers/01_subscriber_to_pusher_multi.py
+    $ python zeromq_high_speed_subscribers/01_subscriber_to_pusher_multi.py
 
     Output:
         Time Elapsed:   17.08 seconds
@@ -67,7 +67,7 @@ Pull-to-Workers
 .. code-block:: bash
 
     $ activate zeromq-high-speed-subscribers
-    $ python zeromq-high-speed-subscribers/02_pull_to_workers.py
+    $ python zeromq_high_speed_subscribers/02_pull_to_workers.py
 
     Output:
         [INFO/Process 1-pid:51780]      Spawning Worker 1

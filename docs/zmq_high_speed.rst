@@ -7,7 +7,7 @@ Submodules
 zmq\_high\_speed.00\_publish\_data\_feed module
 -----------------------------------------------
 
-.. automodule:: zmq_high_speed.00_publish_data_feed
+.. automodule:: zeromq_high_speed_subscribers.00_publish_data_feed
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ zmq\_high\_speed.00\_publish\_data\_feed module
 zmq\_high\_speed.01\_subscriber\_to\_pusher module
 --------------------------------------------------
 
-.. automodule:: zmq_high_speed.01_subscriber_to_pusher
+.. automodule:: zeromq_high_speed_subscribers.01_subscriber_to_pusher
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ zmq\_high\_speed.01\_subscriber\_to\_pusher module
 zmq\_high\_speed.02\_pull\_to\_workers module
 ---------------------------------------------
 
-.. automodule:: zmq_high_speed.02_pull_to_workers
+.. automodule:: zeromq_high_speed_subscribers.02_pull_to_workers
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ zmq\_high\_speed.02\_pull\_to\_workers module
 zmq\_high\_speed.feed\_generator module
 ---------------------------------------
 
-.. automodule:: zmq_high_speed.feed_generator
+.. automodule:: zeromq_high_speed_subscribers.feed_generator
    :members:
    :undoc-members:
    :show-inheritance:
@@ -40,7 +40,7 @@ zmq\_high\_speed.feed\_generator module
 Module contents
 ---------------
 
-.. automodule:: zmq_high_speed
+.. automodule:: zeromq_high_speed_subscribers
    :members:
    :undoc-members:
    :show-inheritance:

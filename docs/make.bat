@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=zmq_high_speed
+set SPHINXPROJ=zeromq_high_speed_subscribers
 
 if "%1" == "" goto help
 

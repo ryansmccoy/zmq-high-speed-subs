@@ -51,7 +51,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with flake8
-	flake8 zmq_high_speed tests
+	flake8 zeromq_high_speed_subscribers tests
 
 test: ## run tests quickly with the default Python
 	python setup.py test
@@ -60,15 +60,15 @@ test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source zmq_high_speed setup.py test
+	coverage run --source zeromq-high-speed-subscribers setup.py test
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/zmq_high_speed.rst
+	rm -f docs/zeromq_high_speed_subscribers.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ zmq_high_speed
+	sphinx-apidoc -o docs/ zeromq_high_speed_subscribers
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html

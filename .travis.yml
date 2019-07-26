@@ -25,5 +25,5 @@ deploy:
     secure: PLEASE_REPLACE_ME
   on:
     tags: true
-    repo: ryansmccoy/zmq_high_speed
+    repo: ryansmccoy/zeromq-high-speed-subscribers
     python: 3.6

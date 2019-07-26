@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
-SPHINXPROJ    = zmq_high_speed
+SPHINXPROJ    = zeromq_high_speed_subscribers
 SOURCEDIR     = .
 BUILDDIR      = _build
 

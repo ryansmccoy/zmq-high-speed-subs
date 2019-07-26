@@ -12,8 +12,7 @@ from datetime import datetime
 
 import zmq
 
-from feed_generator import FakeFeed
-
+from utils import FakeFeed
 
 def server_pub(port="5558"):
     """
