@@ -10,9 +10,9 @@ import multiprocessing
 import logging.config
 import zmq
 import msgpack
-from utils import MessageChecker
+from utils import MessageHandler
 
-class ZMQSubscriber(multiprocessing.Process, MessageChecker):
+class ZMQSubscriber(multiprocessing.Process, MessageHandler):
     def __init__(self, pipe_connection, stop_event, host=r'127.0.0.1', port="5558", check_messages=True):
         self.pipe = pipe_connection
 
@@ -44,7 +44,7 @@ class ZMQSubscriber(multiprocessing.Process, MessageChecker):
 
                 self.pipe.send(message)
 
-class ZMQPusher(multiprocessing.Process, MessageChecker):
+class ZMQPusher(multiprocessing.Process, MessageHandler):
     def __init__(self, pipe_connection, stop_event, host=r'127.0.0.1', port="5559", check_messages=True):
         self.url = f'tcp://{host}:{port}'
         self.pipe = pipe_connection

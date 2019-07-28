@@ -18,8 +18,8 @@ Setup Environment & Run Example  (Windows):
 
     git clone https://github.com/ryansmccoy/zeromq-high-speed-subscribers
     cd zeromq-high-speed-subscribers
-    conda create -n zeromq-high-speed-subscribers python=3.7 -y
-    activate zeromq-high-speed-subscribers
+    conda create -n zeromq-high-speed-subscribers1 python=3.7 -y
+    activate zeromq-high-speed-subscribers1
     pip install -r requirements.txt
 
 Setup Environment & Run Example (Linux):
@@ -37,59 +37,103 @@ Publisher
 
 .. code-block:: bash
 
-    $ activate zeromq-high-speed-subscribers
-    $ python zeromq_high_speed_subscribers/00_publish_data_feed.py
+    $   activate zeromq-high-speed-subscribers
+    $   python zeromq_high_speed_subscribers/00_publish_data_feed.py
 
     Output:
 
-        Starting        07-24-2019_06:02:53:926534,
-        run,07-24-2019_06:02:54:935560,5000,    Q,EES,nan,1994.4,nan,11,200,03:02.2,nan,nan,1990.0,-0.45,5,1
-        run,07-24-2019_06:03:07:639177,70000,    Q,EEQT,nan,298.49,nan,5,1000,03:02.9,nan,nan,298.45,0.02,11
+        2019-07-27 21:04:10,669 INFO     [MainProcess(16508)]
+        2019-07-27 21:04:10,670 INFO     [MainProcess(16508)] run,07-27-2019_21:04:10:6
+        2019-07-27 21:04:10,670 INFO     [MainProcess(16508)]
+        2019-07-27 21:04:10,670 INFO     [MainProcess(16508)] Time Elapsed:     10.0 seconds
+        2019-07-27 21:04:10,670 INFO     [MainProcess(16508)] Messages During Period:   6328
+        2019-07-27 21:04:10,671 INFO     [MainProcess(16508)] Messages Per Second:      632.74
+        2019-07-27 21:04:10,671 INFO     [MainProcess(16508)]
+        2019-07-27 21:04:10,671 INFO     [MainProcess(16508)] Total Messages Published:    59359
+        2019-07-27 21:04:10,672 INFO     [MainProcess(16508)]
+        2019-07-27 21:04:10,674 INFO     [MainProcess(16508)]
 
-        Time Elapsed:   15.0 seconds
-        Total Messages: 74,907
-        Messages Per Second:    4,993.57
+
 
 Subscriber-to-Pusher
 
 .. code-block:: bash
 
-    $ activate zeromq-high-speed-subscribers
-    $ python zeromq_high_speed_subscribers/01_subscriber_to_pusher_multi.py
+    $   activate zeromq-high-speed-subscribers
+    $   python zeromq_high_speed_subscribers/01_subscriber_to_pusher_queue.py
 
     Output:
-        Time Elapsed:   17.08 seconds
-        Total Messages: 76216
-        Messages Per Second:    4463.351
+
+
+        2019-07-27 21:04:50,995 INFO     [ZMQSubscriber-1(45260)]
+        2019-07-27 21:04:50,996 INFO     [ZMQSubscriber-1(45260)]
+        2019-07-27 21:04:50,996 INFO     [ZMQSubscriber-1(45260)] Time Elapsed: 10.0 seconds
+        2019-07-27 21:04:50,996 INFO     [ZMQSubscriber-1(45260)] Messages During Period:       83388
+        2019-07-27 21:04:50,996 INFO     [ZMQSubscriber-1(45260)] Messages Per Second:  626.46
+        2019-07-27 21:04:50,997 INFO     [ZMQSubscriber-1(45260)] Total Subscriber Messages:    83388
+        2019-07-27 21:04:50,997 INFO     [ZMQSubscriber-1(45260)] Current Queue Size:   18
+        2019-07-27 21:04:50,997 INFO     [ZMQSubscriber-1(45260)] b'\xda\x01\xc6run,07-27-2019_21:04:50:995213,83375,FB192'
+        2019-07-27 21:04:50,998 INFO     [ZMQSubscriber-1(45260)]
+        2019-07-27 21:04:50,998 INFO     [ZMQSubscriber-1(45260)]
+
+
+        2019-07-27 21:04:55,096 INFO     [ZMQPusher-2(21312)]
+        2019-07-27 21:04:55,096 INFO     [ZMQPusher-2(21312)]
+        2019-07-27 21:04:55,097 INFO     [ZMQPusher-2(21312)] Time Elapsed:     10.05 seconds
+        2019-07-27 21:04:55,097 INFO     [ZMQPusher-2(21312)] Messages During Period:   85605
+        2019-07-27 21:04:55,098 INFO     [ZMQPusher-2(21312)] Messages Per Second:      594.63
+        2019-07-27 21:04:55,099 INFO     [ZMQPusher-2(21312)] Total Pusher Messages:    85605
+        2019-07-27 21:04:55,099 INFO     [ZMQPusher-2(21312)] Current Queue Size:       49
+        2019-07-27 21:04:55,100 INFO     [ZMQPusher-2(21312)] b'\xda\x01\xe2run,07-27-2019_21:04:54:994628,85592,FB192'
+        2019-07-27 21:04:55,100 INFO     [ZMQPusher-2(21312)]
+        2019-07-27 21:04:55,101 INFO     [ZMQPusher-2(21312)]
+
 
 Pull-to-Workers
 
 .. code-block:: bash
 
-    $ activate zeromq-high-speed-subscribers
-    $ python zeromq_high_speed_subscribers/02_pull_to_workers.py
+    $   activate zeromq-high-speed-subscribers
+    $   python zeromq_high_speed_subscribers/02_pull_to_workers.py
 
     Output:
-        [INFO/Process 1-pid:51780]      Spawning Worker 1
-        [INFO/Process 2-pid:47856]      Spawning Worker 2
-        [INFO/Process 3-pid:29372]      Spawning Worker 3
-        [INFO/Process 4-pid:38376]      Spawning Worker 4
 
-        [INFO/Process 1-pid:51780]      Time Elapsed:   14.72 seconds
-        [INFO/Process 1-pid:51780]      Total Messages: 19628
-        [INFO/Process 1-pid:51780]      Messages Per Second:    1333.159
+        2019-07-27 21:03:58,977 INFO     [MainProcess(43648)]
+        2019-07-27 21:03:58,977 INFO     [MainProcess(43648)] ['run', '07-27-2019_21:03:58:877426', 'Q', 'XLF', 'None', '28.64']
+        2019-07-27 21:03:58,981 INFO     [MainProcess(43648)]
+        2019-07-27 21:03:58,984 INFO     [MainProcess(43648)] Time Elapsed:     10.1 seconds
+        2019-07-27 21:03:58,986 INFO     [MainProcess(43648)] Messages During Period:   7048
+        2019-07-27 21:03:58,988 INFO     [MainProcess(43648)] Messages Per Second:      697.89
+        2019-07-27 21:03:58,990 INFO     [MainProcess(43648)]
+        2019-07-27 21:03:58,993 INFO     [MainProcess(43648)] Total Message Broker Messages:    51816
+        2019-07-27 21:03:58,996 INFO     [MainProcess(43648)]
+        2019-07-27 21:03:59,000 INFO     [MainProcess(43648)] Message Broker Queue Size:        0
+        2019-07-27 21:03:59,003 INFO     [MainProcess(43648)]
+        2019-07-27 21:03:59,006 INFO     [MainProcess(43648)]
 
-        [INFO/Process 3-pid:29372]      Time Elapsed:   14.72 seconds
-        [INFO/Process 3-pid:29372]      Total Messages: 19627
-        [INFO/Process 3-pid:29372]      Messages Per Second:    1333.091
 
-        [INFO/Process 4-pid:38376]      Time Elapsed:   14.72 seconds
-        [INFO/Process 4-pid:38376]      Total Messages: 19627
-        [INFO/Process 4-pid:38376]      Messages Per Second:    1333.544
+        2019-07-27 21:04:02,058 INFO     [MessageConsumer-1(10880)]
+        2019-07-27 21:04:02,058 INFO     [MessageConsumer-1(10880)]
+        2019-07-27 21:04:02,058 INFO     [MessageConsumer-1(10880)] Time Elapsed:       10.0 seconds
+        2019-07-27 21:04:02,059 INFO     [MessageConsumer-1(10880)] Messages During Period:     6443
+        2019-07-27 21:04:02,059 INFO     [MessageConsumer-1(10880)] Messages Per Second:        644.28
+        2019-07-27 21:04:02,060 INFO     [MessageConsumer-1(10880)]
+        2019-07-27 21:04:02,060 INFO     [MessageConsumer-1(10880)] Total Consumer Messages:    53320
+        2019-07-27 21:04:02,060 INFO     [MessageConsumer-1(10880)]
+        2019-07-27 21:04:02,060 INFO     [MessageConsumer-1(10880)] Current Queue Size: 670
+        2019-07-27 21:04:02,061 INFO     [MessageConsumer-1(10880)]
+        2019-07-27 21:04:02,061 INFO     [MessageConsumer-1(10880)]
 
-        [INFO/Process 2-pid:47856]      Time Elapsed:   14.72 seconds
-        [INFO/Process 2-pid:47856]      Total Messages: 19628
-        [INFO/Process 2-pid:47856]      Messages Per Second:    1333.159
+
+        2019-07-27 21:04:05,170 INFO     [DatabaseConsumer-2(28376)]
+        2019-07-27 21:04:05,170 INFO     [DatabaseConsumer-2(28376)]
+        2019-07-27 21:04:05,172 INFO     [DatabaseConsumer-2(28376)] Time Elapsed:      14.44 seconds
+        2019-07-27 21:04:05,175 INFO     [DatabaseConsumer-2(28376)] Messages During Period:    5001
+        2019-07-27 21:04:05,177 INFO     [DatabaseConsumer-2(28376)] Messages Per Second:       346.23
+        2019-07-27 21:04:05,178 INFO     [DatabaseConsumer-2(28376)]
+        2019-07-27 21:04:05,179 INFO     [DatabaseConsumer-2(28376)] Total Database Messages:   55000
+        2019-07-27 21:04:05,182 INFO     [DatabaseConsumer-2(28376)]
+        2019-07-27 21:04:05,183 INFO     [DatabaseConsumer-2(28376)]
 
 
 * Free software: MIT license

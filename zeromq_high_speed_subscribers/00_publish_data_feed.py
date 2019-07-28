@@ -12,13 +12,26 @@ from datetime import datetime
 
 import zmq
 import msgpack
+from utils import FakeFeedSQL, FakeFeedCSV
+from utils import setup_logging
+import logging
 
-from utils import FakeFeed
-
-def server_pub(port="5558"):
+def fake_feed_publisher(sleep_time=1.0, fake_feed="CSV", port="5558"):
     """
     Publishes a constant stream of Data to the listening Subscribers
     """
+    logger = logging.getLogger(__name__)
+
+    logger.addHandler(setup_logging())
+    logger.setLevel(logging.DEBUG)
+
+    if fake_feed == "CSV":
+        fakefeed = FakeFeedCSV(sleep_time=sleep_time)
+    elif fake_feed == "SQL":
+        fakefeed = FakeFeedSQL(sleep_time=sleep_time)
+    else:
+        return
+
     context = zmq.Context()
     socket = context.socket(zmq.PUB)
 
@@ -27,52 +40,42 @@ def server_pub(port="5558"):
     socket.setsockopt(zmq.SNDHWM, 100000)
     socket.setsockopt(zmq.RCVHWM, 100000)
 
-    fakefeed = FakeFeed(sleep_time=0)
-
-    counter = 0
-    counter_print = 0
-
     start_time = datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")
-    print(f'\nStarting \t{start_time}')
+    logger.info(f'Starting FakeFeed{fake_feed}\t{start_time}')
+
+    counter_messages_total = 0
+    counter_messages_period = 0
+    time_start = time.time()
 
     while True:
-        time_start = time.time()
-
         for item in fakefeed:
+
             timestamp = datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")
 
             message = "run," + timestamp + item
             packed = msgpack.packb(message)
             socket.send(packed)
 
-            counter_print += 1
-            counter += 1
+            counter_messages_period += 1
+            counter_messages_total += 1
 
-            if counter_print >= 5000:
-                print(message[0:100])
-                counter_print = 0
-
-            if (time.time() - time_start) > 15:
-                time_end = time.time()
-                total_time = time_end - time_start
-                print(f'\n\tTime Elapsed:\t{round(total_time, 2)} seconds\n\t'
-                      f'Total Messages:\t{counter}\n '
-                      f'\tMessages Per Second:\t{round(counter / total_time, 3)}\n')
-
-                for x in range(4):
-                    shutdown = "stop," + timestamp
-                    packed = msgpack.packb(shutdown)
-                    socket.send(packed)
-
-                print("Shutting Down...")
-                end_time = datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")
-                print(f'\nEnd Time\t{end_time}')
-
-                time.sleep(30)
-
-                return total_time
-
+            if time.time() - time_start > 10:
+                time_now = time.time()
+                total_time = time_now - time_start
+                messages_per_second = round(counter_messages_period / total_time, 2)
+                logger.info(f'')
+                logger.info(f"{message[0:25]}")
+                logger.info(f'')
+                logger.info(f'Time Elapsed:\t{round(total_time, 2)} seconds')
+                logger.info(f'Messages During Period:\t{counter_messages_period}')
+                logger.info(f'Messages Per Second:\t{messages_per_second}')
+                logger.info(f'')
+                logger.info(f'Total Messages Published :\t{counter_messages_total}')
+                logger.info(f'')
+                logger.info(f'\n\n')
+                counter_messages_period = 0
+                time_start = time.time()
 
 if __name__ == "__main__":
-    total_time = server_pub(port="5558")
-    print(total_time)
+
+    fake_feed_publisher(sleep_time=0.001, fake_feed="CSV", port="5558")
