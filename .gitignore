@@ -101,5 +101,7 @@ ENV/
 # mypy
 .mypy_cache/
 .idea/
-/zeromq_high_speed_subscribers/message_process.py
+/zeromq_high_speed_subscribers/message_transformer.py
 /zeromq_high_speed_subscribers/field_readers.py
+.env
+
