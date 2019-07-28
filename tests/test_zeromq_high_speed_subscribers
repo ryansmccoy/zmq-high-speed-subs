@@ -4,8 +4,10 @@
 """Tests for `zeromq_high_speed_subscribers` package."""
 
 
+
 import unittest
 from click.testing import CliRunner
+
 
 from zeromq_high_speed_subscribers import zeromq_high_speed_subscribers
 from zeromq_high_speed_subscribers import cli

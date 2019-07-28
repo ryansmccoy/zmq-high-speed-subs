@@ -111,7 +111,6 @@ Pull-to-Workers
         2019-07-27 21:03:59,003 INFO     [MainProcess(43648)]
         2019-07-27 21:03:59,006 INFO     [MainProcess(43648)]
 
-
         2019-07-27 21:04:02,058 INFO     [MessageConsumer-1(10880)]
         2019-07-27 21:04:02,058 INFO     [MessageConsumer-1(10880)]
         2019-07-27 21:04:02,058 INFO     [MessageConsumer-1(10880)] Time Elapsed:       10.0 seconds
@@ -123,7 +122,6 @@ Pull-to-Workers
         2019-07-27 21:04:02,060 INFO     [MessageConsumer-1(10880)] Current Queue Size: 670
         2019-07-27 21:04:02,061 INFO     [MessageConsumer-1(10880)]
         2019-07-27 21:04:02,061 INFO     [MessageConsumer-1(10880)]
-
 
         2019-07-27 21:04:05,170 INFO     [DatabaseConsumer-2(28376)]
         2019-07-27 21:04:05,170 INFO     [DatabaseConsumer-2(28376)]
