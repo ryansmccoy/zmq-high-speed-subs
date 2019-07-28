@@ -53,8 +53,6 @@ Publisher
         2019-07-27 21:04:10,672 INFO     [MainProcess(16508)]
         2019-07-27 21:04:10,674 INFO     [MainProcess(16508)]
 
-
-
 Subscriber-to-Pusher
 
 .. code-block:: bash
@@ -63,7 +61,6 @@ Subscriber-to-Pusher
     $   python zeromq_high_speed_subscribers/01_subscriber_to_pusher_queue.py
 
     Output:
-
 
         2019-07-27 21:04:50,995 INFO     [ZMQSubscriber-1(45260)]
         2019-07-27 21:04:50,996 INFO     [ZMQSubscriber-1(45260)]
@@ -98,40 +95,41 @@ Pull-to-Workers
 
     Output:
 
-        2019-07-27 21:03:58,977 INFO     [MainProcess(43648)]
-        2019-07-27 21:03:58,977 INFO     [MainProcess(43648)] ['run', '07-27-2019_21:03:58:877426', 'Q', 'XLF', 'None', '28.64']
-        2019-07-27 21:03:58,981 INFO     [MainProcess(43648)]
-        2019-07-27 21:03:58,984 INFO     [MainProcess(43648)] Time Elapsed:     10.1 seconds
-        2019-07-27 21:03:58,986 INFO     [MainProcess(43648)] Messages During Period:   7048
-        2019-07-27 21:03:58,988 INFO     [MainProcess(43648)] Messages Per Second:      697.89
-        2019-07-27 21:03:58,990 INFO     [MainProcess(43648)]
-        2019-07-27 21:03:58,993 INFO     [MainProcess(43648)] Total Message Broker Messages:    51816
-        2019-07-27 21:03:58,996 INFO     [MainProcess(43648)]
-        2019-07-27 21:03:59,000 INFO     [MainProcess(43648)] Message Broker Queue Size:        0
-        2019-07-27 21:03:59,003 INFO     [MainProcess(43648)]
-        2019-07-27 21:03:59,006 INFO     [MainProcess(43648)]
+        2019-07-28 00:38:51,177 INFO     [MainProcess(42868)]
+        2019-07-28 00:38:51,178 INFO     [MainProcess(42868)] ['run', '07-28-2019_00:38:51:076861', 'Q', 'XLF', 'None', '28.64']
+        2019-07-28 00:38:51,182 INFO     [MainProcess(42868)]
+        2019-07-28 00:38:51,184 INFO     [MainProcess(42868)] Time Elapsed:     10.06 seconds
+        2019-07-28 00:38:51,185 INFO     [MainProcess(42868)] Messages During Period:   6621
+        2019-07-28 00:38:51,186 INFO     [MainProcess(42868)] Messages Per Second:      658.2
+        2019-07-28 00:38:51,187 INFO     [MainProcess(42868)]
+        2019-07-28 00:38:51,188 INFO     [MainProcess(42868)] Total Message Broker Messages:    108931
+        2019-07-28 00:38:51,189 INFO     [MainProcess(42868)]
+        2019-07-28 00:38:51,190 INFO     [MainProcess(42868)] Message Broker Queue Size:        0
+        2019-07-28 00:38:51,191 INFO     [MainProcess(42868)]
+        2019-07-28 00:38:51,192 INFO     [MainProcess(42868)]
 
-        2019-07-27 21:04:02,058 INFO     [MessageConsumer-1(10880)]
-        2019-07-27 21:04:02,058 INFO     [MessageConsumer-1(10880)]
-        2019-07-27 21:04:02,058 INFO     [MessageConsumer-1(10880)] Time Elapsed:       10.0 seconds
-        2019-07-27 21:04:02,059 INFO     [MessageConsumer-1(10880)] Messages During Period:     6443
-        2019-07-27 21:04:02,059 INFO     [MessageConsumer-1(10880)] Messages Per Second:        644.28
-        2019-07-27 21:04:02,060 INFO     [MessageConsumer-1(10880)]
-        2019-07-27 21:04:02,060 INFO     [MessageConsumer-1(10880)] Total Consumer Messages:    53320
-        2019-07-27 21:04:02,060 INFO     [MessageConsumer-1(10880)]
-        2019-07-27 21:04:02,060 INFO     [MessageConsumer-1(10880)] Current Queue Size: 670
-        2019-07-27 21:04:02,061 INFO     [MessageConsumer-1(10880)]
-        2019-07-27 21:04:02,061 INFO     [MessageConsumer-1(10880)]
+        2019-07-28 00:38:46,282 INFO     [MessageConsumer-1(33732)]
+        2019-07-28 00:38:46,283 INFO     [MessageConsumer-1(33732)]
+        2019-07-28 00:38:46,284 INFO     [MessageConsumer-1(33732)] Time Elapsed:       10.02 seconds
+        2019-07-28 00:38:46,295 INFO     [MessageConsumer-1(33732)] Messages During Period:     6256
+        2019-07-28 00:38:46,299 INFO     [MessageConsumer-1(33732)] Messages Per Second:        624.08
+        2019-07-28 00:38:46,304 INFO     [MessageConsumer-1(33732)]
+        2019-07-28 00:38:46,308 INFO     [MessageConsumer-1(33732)] Total Consumer Messages:    106677
+        2019-07-28 00:38:46,312 INFO     [MessageConsumer-1(33732)]
+        2019-07-28 00:38:46,317 INFO     [MessageConsumer-1(33732)] Current Queue Size: 44
+        2019-07-28 00:38:46,320 INFO     [MessageConsumer-1(33732)]
+        2019-07-28 00:38:46,323 INFO     [MessageConsumer-1(33732)]
 
-        2019-07-27 21:04:05,170 INFO     [DatabaseConsumer-2(28376)]
-        2019-07-27 21:04:05,170 INFO     [DatabaseConsumer-2(28376)]
-        2019-07-27 21:04:05,172 INFO     [DatabaseConsumer-2(28376)] Time Elapsed:      14.44 seconds
-        2019-07-27 21:04:05,175 INFO     [DatabaseConsumer-2(28376)] Messages During Period:    5001
-        2019-07-27 21:04:05,177 INFO     [DatabaseConsumer-2(28376)] Messages Per Second:       346.23
-        2019-07-27 21:04:05,178 INFO     [DatabaseConsumer-2(28376)]
-        2019-07-27 21:04:05,179 INFO     [DatabaseConsumer-2(28376)] Total Database Messages:   55000
-        2019-07-27 21:04:05,182 INFO     [DatabaseConsumer-2(28376)]
-        2019-07-27 21:04:05,183 INFO     [DatabaseConsumer-2(28376)]
+        2019-07-28 00:38:37,991 INFO     [DatabaseConsumer-2(24932)]
+        2019-07-28 00:38:37,992 INFO     [DatabaseConsumer-2(24932)]
+        2019-07-28 00:38:37,993 INFO     [DatabaseConsumer-2(24932)] Time Elapsed:      15.96 seconds
+        2019-07-28 00:38:37,994 INFO     [DatabaseConsumer-2(24932)] Messages During Period:    10001
+        2019-07-28 00:38:37,996 INFO     [DatabaseConsumer-2(24932)] Messages Per Second:       626.78
+        2019-07-28 00:38:37,996 INFO     [DatabaseConsumer-2(24932)]
+        2019-07-28 00:38:37,997 INFO     [DatabaseConsumer-2(24932)] Total Database Messages:   100000
+        2019-07-28 00:38:37,997 INFO     [DatabaseConsumer-2(24932)]
+        2019-07-28 00:38:37,998 INFO     [DatabaseConsumer-2(24932)]
+
 
 
 * Free software: MIT license
