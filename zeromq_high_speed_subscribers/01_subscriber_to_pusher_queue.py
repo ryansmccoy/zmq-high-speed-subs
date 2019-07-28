@@ -12,27 +12,26 @@ import multiprocessing
 from utils import MessageHandler
 import time
 
-# Create handlers
-c_handler = logging.StreamHandler()
-c_handler.setLevel(logging.DEBUG)
-# Create formatters and add it to handlers
-c_format = logging.Formatter('%(asctime)s %(levelname)-8s [%(processName)-10s(%(process)d)] %(message)s')
-c_handler.setFormatter(c_format)
+from utils import MessageHandler, setup_logging, initializer
 
 class ZMQSubscriber(multiprocessing.Process, MessageHandler):
-    def __init__(self, queue, stop_event, host=r'127.0.0.1', port="5558", check_messages=True, show_messages=True):
+    def __init__(self, queue, kill_switch, host=r'127.0.0.1', port="5558", check_messages=True, show_messages=True):
         self.queue = queue
 
         self.url = f'tcp://{host}:{port}'
-        self.stop_event = stop_event
+        self.kill_switch = kill_switch
         self.check_messages = check_messages
         self.show_messages = show_messages
         multiprocessing.Process.__init__(self)
 
+    def send_shutdown(self):
+        self.queue.put("stop")
+
     def run(self):
         self.initialize(show_messages=False, check_messages=True)
         self.logger = multiprocessing.get_logger()
-        self.logger.handlers[0] = c_handler
+        self.logger.handlers[0] = setup_logging()
+
         self.logger.info(f"Initializing ZMQ Subscriber")
         self.logger.info(f"Starting ZMQ \t{datetime.datetime.now()}")
 
@@ -42,16 +41,17 @@ class ZMQSubscriber(multiprocessing.Process, MessageHandler):
         counter_total = 0
         time_start = time.time()
 
-        ctx = zmq.Context()
-        with ctx.socket(zmq.SUB) as zmq_socket:
-            zmq_socket.setsockopt(zmq.SNDHWM, 100000)
-            zmq_socket.setsockopt(zmq.RCVHWM, 100000)
-            zmq_socket.setsockopt_string(zmq.SUBSCRIBE, "")
-            zmq_socket.connect(self.url)
+        self.ctx = zmq.Context()
+
+        with self.ctx.socket(zmq.SUB) as self.zmq_socket:
+            self.zmq_socket.setsockopt(zmq.SNDHWM, 100000)
+            self.zmq_socket.setsockopt(zmq.RCVHWM, 100000)
+            self.zmq_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+            self.zmq_socket.connect(self.url)
 
             # receive message and pipe to other process
-            while not self.stop_event.is_set():
-                message = zmq_socket.recv()
+            while not self.kill_switch.is_set():
+                message = self.zmq_socket.recv()
 
                 # if self.check_messages:
                 self.check_message(message)
@@ -79,34 +79,42 @@ class ZMQSubscriber(multiprocessing.Process, MessageHandler):
 
 
 class ZMQPusher(multiprocessing.Process, MessageHandler):
-    def __init__(self, queue, stop_event, host=r'127.0.0.1', port="5559", check_messages=True, show_messages=True):
+    def __init__(self, queue, kill_switch, host=r'127.0.0.1', port="5559", check_messages=True, show_messages=True):
         self.queue = queue
 
         self.url = f'tcp://{host}:{port}'
-        self.stop_event = stop_event
+        self.kill_switch = kill_switch
         self.check_messages = check_messages
         self.show_messages = show_messages
         multiprocessing.Process.__init__(self)
 
+    def send_shutdown(self):
+        with self.ctx.socket(zmq.PUSH) as self.zmq_socket:
+            self.zmq_socket.bind(self.url)
+            print("Sending Shutdown")
+            for x in range(10):
+                self.zmq_socket.send_string("stop")
+
     def run(self):
         self.initialize(show_messages=False, check_messages=True)
         self.logger = multiprocessing.get_logger()
-        self.logger.handlers[0] = c_handler
+        self.logger.handlers[0] = setup_logging()
         self.logger.info("Initializing ZMQ Pusher")
         self.logger.info(f"Starting ZMQ \t{datetime.datetime.now()}")
         self.logger.info(f'\n\n')
 
+        message = ""
         time_start = time.time()
         counter_messages_period = 0
         counter_total = 0
 
-        ctx = zmq.Context()
-        with ctx.socket(zmq.PUSH) as zmq_socket:
-            zmq_socket.setsockopt(zmq.SNDHWM, 10000)
-            zmq_socket.setsockopt(zmq.RCVHWM, 10000)
-            zmq_socket.bind(self.url)
-            while not self.stop_event.is_set():
+        self.ctx = zmq.Context()
 
+        with self.ctx.socket(zmq.PUSH) as self.zmq_socket:
+            self.zmq_socket.setsockopt(zmq.SNDHWM, 10000)
+            self.zmq_socket.setsockopt(zmq.RCVHWM, 10000)
+            self.zmq_socket.bind(self.url)
+            while not self.kill_switch.is_set():
                 if not self.queue.empty():
 
                     # receive message and push to worker processes
@@ -116,7 +124,7 @@ class ZMQPusher(multiprocessing.Process, MessageHandler):
                     self.check_message(message)
                     counter_messages_period += 1
                     counter_total += 1
-                    zmq_socket.send(message)
+                    self.zmq_socket.send(message)
 
                 else:
                     time.sleep(0.1)
@@ -139,13 +147,6 @@ class ZMQPusher(multiprocessing.Process, MessageHandler):
                     counter_messages_period = 0
                     time.sleep(1)
 
-            # send stop messages to potential workers
-            for x in range(10):
-                zmq_socket.send_string(message)
-
-def initializer(level):
-    global logger
-    logger = multiprocessing.log_to_stderr(level)
 
 if __name__ == "__main__":
 
@@ -153,10 +154,10 @@ if __name__ == "__main__":
     initializer(logging.DEBUG)
 
     queue = multiprocessing.Queue()
-    stop_event = multiprocessing.Event()
+    kill_switch = multiprocessing.Event()
 
-    process_subscriber = ZMQSubscriber(queue, stop_event, show_messages=False)
-    process_pusher = ZMQPusher(queue, stop_event, show_messages=False)
+    process_subscriber = ZMQSubscriber(queue, kill_switch, show_messages=False)
+    process_pusher = ZMQPusher(queue, kill_switch, show_messages=False)
 
     process_subscriber.start()
     process_pusher.start()

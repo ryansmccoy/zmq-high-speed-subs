@@ -34,8 +34,7 @@ try:
 except:
     from utils import MessageTransformer
 
-import utils
-from utils import MessageHandler, setup_logging, initializer
+from utils import MessageHandler, setup_logging, initializer, setup_db_connection
 
 # set the date and time format
 date_format = "%m-%d-%Y %H:%M:%S"
@@ -54,7 +53,6 @@ class MessageConsumer(multiprocessing.Process):
 
     def run(self):
         self.logger = multiprocessing.get_logger()
-        # logger.addHandler(c_handler)
         self.logger.handlers[0] = setup_logging()
 
         self.logger.info("")
@@ -147,7 +145,7 @@ class DatabaseConsumer(multiprocessing.Process):
         process = MessageTransformer()
         header = [head.lower().replace(" ", "_") for head in process._update_fields_list]
 
-        engine = utils.setup_db_connection()
+        engine = setup_db_connection()
 
         counter_messages_total = 0
         time_start = time.time()
@@ -171,15 +169,17 @@ class DatabaseConsumer(multiprocessing.Process):
 
                 np_array = np.zeros([], dtype=process._update_dtype)
                 current_loop_iteration = 0
-                while current_loop_iteration < 5000:
+                while current_loop_iteration < 10000:
                     try:
                         array = self.databaseQueue.get(block=False)
                         np_array = np.append(np_array, array[0])
                         current_loop_iteration += 1
                         self.counter_total_database += 1
-                    except Empty:
+                    except Empty as empty:
                         time.sleep(1)
                         continue
+                    except Exception as E:
+                        self.logger.info(f"Empty Queue\t{E}")
 
                 """
                 Starts worker that connects to the Pusher
@@ -228,8 +228,8 @@ class DatabaseConsumer(multiprocessing.Process):
                 df = pd.DataFrame()
 
 class MessageBroker(MessageHandler):
-    def __init__(self, max_consumers=2, host=r'127.0.0.1', port="5559", check_messages=True, show_messages=True):
-
+    def __init__(self, kill_switch, max_consumers=2, host=r'127.0.0.1', port="5559", check_messages=True, show_messages=True):
+        self.kill_switch = kill_switch
         self.url = f'tcp://{host}:{port}'
         self.check_messages = check_messages
         self.show_messages = show_messages
@@ -238,7 +238,7 @@ class MessageBroker(MessageHandler):
         self.resultQueue = JoinableQueue()
         self.databaseQueue = JoinableQueue()
         self.stopEventQueue = JoinableQueue()
-        self.databaseQueue = ArrayQueue()
+        self.databaseQueue = ArrayQueue(max_mbytes=300)
 
         self.consumers = []
         self.max_consumers = max_consumers
@@ -258,26 +258,27 @@ class MessageBroker(MessageHandler):
         messageConsumer = MessageConsumer(self.messageQueue, self.databaseQueue, self.stopEventQueue)
         messageConsumer.start()
         self.consumers.append(messageConsumer)
+        message = ""
 
         time.sleep(5)
         databaseConsumer = DatabaseConsumer(self.databaseQueue, self.resultQueue, self.stopEventQueue)
         databaseConsumer.start()
         self.consumers.append(databaseConsumer)
 
-        ctx = zmq.Context()
         counter_messages_period = 0
         self.counter_total_manager = 0
-
         time_start = time.time()
 
-        with ctx.socket(zmq.PULL) as zmq_socket:
-            zmq_socket.setsockopt(zmq.SNDHWM, 10000)
-            zmq_socket.setsockopt(zmq.RCVHWM, 10000)
-            zmq_socket.connect(self.url)
+        self.ctx = zmq.Context()
 
-            while not stop_event.is_set():
+        with self.ctx.socket(zmq.PULL) as self.zmq_socket:
+            self.zmq_socket.setsockopt(zmq.SNDHWM, 10000)
+            self.zmq_socket.setsockopt(zmq.RCVHWM, 10000)
+            self.zmq_socket.connect(self.url)
+
+            while not self.kill_switch.is_set():
                 # packed = socket_zmq_pull.recv_string()
-                packed = zmq_socket.recv()
+                packed = self.zmq_socket.recv()
                 message = msgpack.unpackb(packed).decode().split(',')
                 self.counter_total_manager += 1
                 counter_messages_period += 1
@@ -337,18 +338,19 @@ class MessageBroker(MessageHandler):
 
 if __name__ == "__main__":
     results_queue = Queue()
-    stop_event = multiprocessing.Event()
+    kill_switch = multiprocessing.Event()
 
     initializer(logging.DEBUG)
 
     workers = {}
     num_workers = 2
 
-    manager = MessageBroker()
+    manager = MessageBroker(kill_switch)
 
     try:
         manager.start()
     except KeyboardInterrupt:
         print('parent received ctrl-c')
+        kill_switch.set()
         for consumer in manager.consumers:
             consumer.join()
