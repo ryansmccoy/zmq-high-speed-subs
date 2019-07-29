@@ -17,7 +17,7 @@ from utils import setup_logging,initializer
 import logging
 
 class FeedPublisher(multiprocessing.Process):
-    def __init__(self,kill_switch, sleep_time=1.0, fake_feed="CSV", host="*", port="5558"):
+    def __init__(self, kill_switch, sleep_time=1.0, fake_feed="CSV", host="*", port="5558"):
         self.kill_switch = kill_switch
         self.sleep_time = sleep_time
         self.fake_feed=fake_feed
