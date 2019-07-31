@@ -64,21 +64,28 @@ class FakeFeedCSV:
     def __init__(self, sleep_time: (int or float) = 1.0, filepath=f'zeromq_high_speed_subscribers/test_data.csv'):
         self.filepath = filepath
         self.sleep_time = sleep_time
-
-    def __iter__(self):
         try:
             df = pd.read_csv(self.filepath)
         except:
             df = pd.read_csv(os.path.basename(self.filepath))
 
         df.reset_index(drop=True, inplace=True)
+        self.messages = []
         counter = 0
-        for idx, df_ in cycle(enumerate(df.index)):
+
+        for idx, df_ in enumerate(df.index):
+            msg = f"{counter}," + ",".join(list(df.iloc[idx,:].astype(str).to_dict().values())).replace("nan","")
+            self.messages.append(msg)
+
+    def __iter__(self):
+        counter = 0
+        test_messages = []
+        time_start = time.time()
+        for msg in cycle(self.messages):
             counter += 1
-            msg = f"{counter}," + ",".join(list(df.iloc[idx,:].astype(str).to_dict().values()))
-            # print(msg)
+            test_messages.append(msg)
             yield msg
-            time.sleep(self.sleep_time)
+            # time.sleep(self.sleep_time)
 
 class FakeFeedSQL:
     """Generates a Repeating Feed of Data for Benchmarking/Testing
@@ -173,7 +180,7 @@ class MessageHandler:
 
 def setup_logging():
     c_handler = logging.StreamHandler()
-    c_handler.setLevel(logging.DEBUG)
+    c_handler.setLevel(logging.INFO)
     # Create formatters and add it to handlers
     c_format = logging.Formatter('%(asctime)s %(levelname)-8s [%(processName)-10s(%(process)d)] %(message)s')
     c_handler.setFormatter(c_format)
@@ -195,7 +202,7 @@ def setup_db_connection(driver='sqlalchemy', echo=False):
             f'PWD={os.getenv("DB_PASSWORD")}'
         )
 
-        print(sql_db_connection)
+        # print(sql_db_connection)
 
         params = urllib.parse.quote_plus(sql_db_connection)
 
