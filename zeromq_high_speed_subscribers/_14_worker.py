@@ -13,8 +13,10 @@ from queue import Empty
 
 import numpy as np
 import pandas as pd
-
-from message_transformer import MessageValidator
+try:
+    from message_transformer import MessageValidator
+except:
+    from utils import MessageValidator
 from utils import setup_db_connection, setup_logging
 
 class Worker(MessageValidator, multiprocessing.Process):
@@ -31,6 +33,7 @@ class Worker(MessageValidator, multiprocessing.Process):
         self.queue = queue
         self.kill_switch = kill_switch
         self.show_first_message = True
+        self.table_name = f"{datetime.now().strftime('%Y%m%d')}_LVL1"
 
         # counters for benchmarking
         self.counter = 0
@@ -117,7 +120,7 @@ class Worker(MessageValidator, multiprocessing.Process):
                 df = df.sort_values(['ask_time', 'symbol'])
                 # for symbol, df_g in df.groupby(['symbol']):
                 #     df_g.to_sql(name=f"{symbol}_LVL1_Q_V2", con=engine, index=False, if_exists="append")
-                df.to_sql(name=f"{datetime.now().strftime('%Y%m%d')}_LVL1_TEST", con=self.engine, index=False, if_exists="append")
+                df.to_sql(name=self.table_name, con=self.engine, index=False, if_exists="append")
                 self.logger.debug(f'Completed to Insert into Database')
             except Exception as e:
                 self.logger.error(e)

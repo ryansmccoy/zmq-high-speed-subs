@@ -5,24 +5,24 @@ Copyright (C) 2019 Ryan S. McCoy <github@ryansmccoy.com>
 MIT License
 
 """
+import threading
+from uuid import uuid4
+from collections import defaultdict
 import multiprocessing
 import time
 from queue import Queue
 
 import zmq
+
 from dotenv import load_dotenv
-import threading
-from uuid import uuid4
-from collections import defaultdict
+load_dotenv()
 
 from _14_worker import Worker
 
-load_dotenv()
-
 try:
-    from message_transformer import MessageValidator
+    from message_validator import MessageValidator
 except:
-    from utils import MessageTransformer
+    from utils import MessageValidator
 
 from utils import setup_logging
 
@@ -62,7 +62,6 @@ class ZMQPuller(multiprocessing.Process):
         self.logger.handlers[0] = setup_logging()
 
         self.message_queue = Queue()
-
         self._receive_thread = threading.Thread(target=_zmq_puller,args=(self.message_queue, self.zmq_pull_url,), name="ZMQPullerThread")
         self._receive_thread.start()
 
