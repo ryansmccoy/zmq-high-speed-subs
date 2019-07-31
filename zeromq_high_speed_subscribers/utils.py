@@ -20,7 +20,7 @@ import time
 from itertools import cycle
 import pandas as pd
 
-class MessageTransformer:
+class MessageValidator:
     _update_fields_list = ['Symbol', '7 Day Yield', 'Ask', 'Ask Change',
                            'Ask Market Center', 'Ask Size', 'Ask Time',
                            'Available Regions', 'Average Maturity', 'Bid',
@@ -201,8 +201,6 @@ def setup_db_connection(driver='sqlalchemy', echo=False):
             f'UID={os.getenv("DB_USERNAME")};'
             f'PWD={os.getenv("DB_PASSWORD")}'
         )
-
-        # print(sql_db_connection)
 
         params = urllib.parse.quote_plus(sql_db_connection)
 

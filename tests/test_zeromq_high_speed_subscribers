@@ -4,7 +4,6 @@
 """Tests for `zeromq_high_speed_subscribers` package."""
 
 
-
 import unittest
 from click.testing import CliRunner
 
