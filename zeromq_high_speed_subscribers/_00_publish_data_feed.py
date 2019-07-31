@@ -49,6 +49,7 @@ class FeedPublisher(multiprocessing.Process):
             return
 
         self.ctx = zmq.Context()
+
         with self.ctx.socket(zmq.PUB) as self.zmq_socket:
             self.zmq_socket.setsockopt(zmq.SNDHWM, 100000)
             self.zmq_socket.setsockopt(zmq.RCVHWM, 100000)
@@ -62,23 +63,25 @@ class FeedPublisher(multiprocessing.Process):
 
             while not self.kill_switch.is_set():
 
-                for item in fakefeed:
-
-                    timestamp = datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")
-
-                    message = "run," + timestamp + item
-                    packed = msgpack.packb(message)
-                    self.zmq_socket.send(packed)
+                for idx, item in enumerate(fakefeed):
+                    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f,")
+                    text = 'Q,' + item[2:]
+                    message =  f"{idx} {timestamp}" + text
+                    # packed = msgpack.packb(message)
+                    self.zmq_socket.send(message.encode('utf-8'))
 
                     counter_messages_period += 1
                     counter_messages_total += 1
+
+                    if counter_messages_period > 30000:
+                        time.sleep(1)
 
                     if time.time() - time_start > 10:
                         time_now = time.time()
                         total_time = time_now - time_start
                         messages_per_second = round(counter_messages_period / total_time, 2)
                         self.logger.info(f'')
-                        self.logger.info(f"{message[0:25]}")
+                        self.logger.info(f"{message}")
                         self.logger.info(f'')
                         self.logger.info(f'Time Elapsed:\t{round(total_time, 2)} seconds')
                         self.logger.info(f'Messages During Period:\t{counter_messages_period}')
@@ -101,7 +104,7 @@ if __name__ == "__main__":
     initializer(logging.DEBUG)
 
     kill_switch = multiprocessing.Event()
-    fake_feed = FeedPublisher(kill_switch, sleep_time=0.00001, fake_feed="CSV", port="5558")
+    fake_feed = FeedPublisher(kill_switch, sleep_time=1, fake_feed="CSV", port="5558")
     fake_feed.start()
 
     try:

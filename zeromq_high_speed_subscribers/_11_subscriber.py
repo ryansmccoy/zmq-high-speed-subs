@@ -61,14 +61,12 @@ class ZMQSubscriberPipe(multiprocessing.Process, MessageHandler):
 
 
 class ZMQSubscriberQueue(multiprocessing.Process, MessageHandler):
-    def __init__(self, queue, kill_switch, host=r'127.0.0.1', port="5558", interval_time=10, check_messages=True, show_messages=True):
+    def __init__(self, queue, kill_switch,bind=True,host=r'127.0.0.1', port="5558", interval_time=10):
         self.queue = queue
         self.interval_time = interval_time
 
         self.url = f'tcp://{host}:{port}'
         self.kill_switch = kill_switch
-        self.check_messages = check_messages
-        self.show_messages = show_messages
         multiprocessing.Process.__init__(self)
 
     def send_shutdown(self):
@@ -92,9 +90,12 @@ class ZMQSubscriberQueue(multiprocessing.Process, MessageHandler):
         self.ctx = zmq.Context()
 
         with self.ctx.socket(zmq.SUB) as self.zmq_socket:
+
             self.zmq_socket.setsockopt(zmq.SNDHWM, 100000)
             self.zmq_socket.setsockopt(zmq.RCVHWM, 100000)
             self.zmq_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+
+            # self.zmq_socket.bind(self.url)
             self.zmq_socket.connect(self.url)
 
             # receive message and pipe to other process
@@ -115,7 +116,6 @@ class ZMQSubscriberQueue(multiprocessing.Process, MessageHandler):
                     messages_per_second = round(counter_messages_period / time_period, 2)
 
                     self.logger.info(f'')
-                    self.logger.info(f'')
                     self.logger.info(f'Time Elapsed:\t{round(self.interval_time, 2)} seconds')
                     self.logger.info(f'Messages During Period:\t{self.counter_messages}')
                     self.logger.info(f'Messages Per Second:\t{messages_per_second}')
@@ -133,4 +133,4 @@ class ZMQSubscriberQueue(multiprocessing.Process, MessageHandler):
                     self.logger.info(f'')
                     self.logger.info(f'\n\n')
                     counter_messages_period = 0
-                    time.sleep(1)
+                    # time.sleep(0.1)

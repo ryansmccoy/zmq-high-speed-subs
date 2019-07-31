@@ -101,7 +101,7 @@ class ZMQPusherQueue(multiprocessing.Process, MessageHandler):
                 self.zmq_socket.send_string("stop")
 
     def run(self):
-        self.initialize(show_messages=False, check_messages=False)
+        # self.initialize(show_messages=False, check_messages=False)
         self.logger = multiprocessing.get_logger()
         self.logger.handlers[0] = setup_logging()
         self.logger.info("Initializing ZMQ Pusher")
@@ -123,12 +123,11 @@ class ZMQPusherQueue(multiprocessing.Process, MessageHandler):
             self.zmq_socket.bind(self.url)
             while not self.kill_switch.is_set():
                 if not self.queue.empty():
-
                     # receive message and push to worker processes
                     message = self.queue.get()
                     # flag to turn on and off check messages
                     # if self.check_messages:
-                    self.check_message(message)
+                    # self.check_message(message)
                     counter_messages_period += 1
                     counter_total += 1
                     self.zmq_socket.send(message)
@@ -142,7 +141,6 @@ class ZMQPusherQueue(multiprocessing.Process, MessageHandler):
                     time_total = time_total + time_period
                     messages_per_second = round(counter_messages_period / time_period, 2)
 
-                    self.logger.info(f'')
                     self.logger.info(f'')
                     self.logger.info(f'Time Elapsed:\t{round(self.interval_time, 2)} seconds')
                     self.logger.info(f'Messages During Period:\t{counter_messages_period}')
@@ -160,4 +158,4 @@ class ZMQPusherQueue(multiprocessing.Process, MessageHandler):
                     self.logger.info(f'')
                     self.logger.info(f'\n\n')
                     counter_messages_period = 0
-                    time.sleep(1)
+                    # time.sleep(1)
