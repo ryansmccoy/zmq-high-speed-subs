@@ -12,7 +12,7 @@ from multiprocessing import Queue
 
 from dotenv import load_dotenv
 
-from _10_manager import ServiceBroker
+from _10_manager import ServiceManager
 
 load_dotenv()
 try:
@@ -22,7 +22,7 @@ except Exception as e:
     sys.exit(0)
 
 try:
-    from message_transformer import MessageTransformer
+    from message_transformer import MessageValidator
 except:
     from utils import MessageTransformer
 
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     workers = {}
     num_workers = 2
 
-    manager = ServiceBroker(kill_switch)
+    manager = ServiceManager(kill_switch)
 
     try:
         manager.start()

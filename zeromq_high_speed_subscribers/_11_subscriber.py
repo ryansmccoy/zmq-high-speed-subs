@@ -1,3 +1,10 @@
+"""
+
+Copyright (C) 2019 Ryan S. McCoy <github@ryansmccoy.com>
+
+MIT License
+
+"""
 import datetime
 import multiprocessing
 import time
@@ -6,59 +13,6 @@ from datetime import datetime
 import zmq
 
 from utils import MessageHandler, setup_logging
-
-class ZMQSubscriberAsync:
-    def __init__(self, port="5558"):
-        self.ctx = zmq.asyncio.Context()
-        self.sock = self.ctx.socket(zmq.SUB)
-        self.sock.setsockopt_string(zmq.SUBSCRIBE, "")
-        self.port = port
-        self.counter = 0
-        self.counter_print = 0
-        print(f"\n\tStarting Subscriber on {port}")
-
-    async def handle(self, queue):
-        self.sock.connect(f'tcp://127.0.0.1:{self.port}')
-        self.counter += 0
-
-        while True:
-            msg = await self.sock.recv_string()
-            # print(f"SUB -> {msg[0:100]}")
-            await queue.put(msg)
-
-
-class ZMQSubscriberPipe(multiprocessing.Process, MessageHandler):
-    def __init__(self, pipe_connection, stop_event, host=r'127.0.0.1', port="5558", check_messages=True):
-        self.pipe = pipe_connection
-
-        self.url = f'tcp://{host}:{port}'
-        self.stop_event = stop_event
-        self.check_messages = check_messages
-        multiprocessing.Process.__init__(self)
-
-    def run(self):
-        self.initialize(self.stop_event)
-        self.logger = multiprocessing.get_logger()
-        self.logger.info(f"Starting ZMQ \t{datetime.now()}")
-
-        ctx = zmq.Context()
-        with ctx.socket(zmq.SUB) as zmq_socket:
-            zmq_socket.setsockopt(zmq.SNDHWM, 100000)
-            zmq_socket.setsockopt(zmq.RCVHWM, 100000)
-            zmq_socket.setsockopt_string(zmq.SUBSCRIBE, "")
-            # zmq_socket.setsockopt(zmq.SUBSCRIBE, "")
-            zmq_socket.connect(self.url)
-
-            # receive message and pipe to other process
-            while not self.stop_event.is_set():
-                # message = zmq_socket.recv_string()
-                message = zmq_socket.recv()
-
-                if self.check_messages:
-                    self.check_message(message)
-
-                self.pipe.send(message)
-
 
 class ZMQSubscriberQueue(multiprocessing.Process, MessageHandler):
     def __init__(self, queue, kill_switch,bind=True,host=r'127.0.0.1', port="5558", interval_time=10):
@@ -125,7 +79,7 @@ class ZMQSubscriberQueue(multiprocessing.Process, MessageHandler):
                     self.logger.info(f'Total Messages:\t{counter_total}')
                     self.logger.info(f'Total Messages Per Second:\t{round((counter_total / time_total), 2)}')
                     self.logger.info(f'')
-                    self.logger.info(f"Current Queue Size:\t{self.queue.qsize()}")
+                    self.logger.info(f"Current _Queue Size:\t{self.queue.qsize()}")
                     self.logger.info(f'')
                     self.logger.info(f"{message[0:45]}")
 
@@ -134,3 +88,56 @@ class ZMQSubscriberQueue(multiprocessing.Process, MessageHandler):
                     self.logger.info(f'\n\n')
                     counter_messages_period = 0
                     # time.sleep(0.1)
+
+class ZMQSubscriberAsync:
+    def __init__(self, port="5558"):
+        self.ctx = zmq.asyncio.Context()
+        self.sock = self.ctx.socket(zmq.SUB)
+        self.sock.setsockopt_string(zmq.SUBSCRIBE, "")
+        self.port = port
+        self.counter = 0
+        self.counter_print = 0
+        print(f"\n\tStarting Subscriber on {port}")
+
+    async def handle(self, queue):
+        self.sock.connect(f'tcp://127.0.0.1:{self.port}')
+        self.counter += 0
+
+        while True:
+            msg = await self.sock.recv_string()
+            # print(f"SUB -> {msg[0:100]}")
+            await queue.put(msg)
+
+
+class ZMQSubscriberPipe(multiprocessing.Process, MessageHandler):
+    def __init__(self, pipe_connection, stop_event, host=r'127.0.0.1', port="5558", check_messages=True):
+        self.pipe = pipe_connection
+
+        self.url = f'tcp://{host}:{port}'
+        self.stop_event = stop_event
+        self.check_messages = check_messages
+        multiprocessing.Process.__init__(self)
+
+    def run(self):
+        self.initialize(self.stop_event)
+        self.logger = multiprocessing.get_logger()
+        self.logger.info(f"Starting ZMQ \t{datetime.now()}")
+
+        ctx = zmq.Context()
+        with ctx.socket(zmq.SUB) as zmq_socket:
+            zmq_socket.setsockopt(zmq.SNDHWM, 100000)
+            zmq_socket.setsockopt(zmq.RCVHWM, 100000)
+            zmq_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+            # zmq_socket.setsockopt(zmq.SUBSCRIBE, "")
+            zmq_socket.connect(self.url)
+
+            # receive message and pipe to other process
+            while not self.stop_event.is_set():
+                # message = zmq_socket.recv_string()
+                message = zmq_socket.recv()
+
+                if self.check_messages:
+                    self.check_message(message)
+
+                self.pipe.send(message)
+

@@ -11,7 +11,6 @@ import time
 from datetime import datetime
 
 import zmq
-import msgpack
 from utils import FakeFeedSQL, FakeFeedCSV
 from utils import setup_logging,initializer
 import logging
@@ -73,7 +72,7 @@ class FeedPublisher(multiprocessing.Process):
                     counter_messages_period += 1
                     counter_messages_total += 1
 
-                    if counter_messages_period > 30000:
+                    if counter_messages_period > 55000:
                         time.sleep(1)
 
                     if time.time() - time_start > 10:
@@ -96,9 +95,7 @@ class FeedPublisher(multiprocessing.Process):
                 if self.kill_switch.is_set:
                     break
 
-
         self.send_shutdown()
-
 
 if __name__ == "__main__":
     initializer(logging.DEBUG)
