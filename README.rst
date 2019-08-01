@@ -1,7 +1,6 @@
 ===============================
 ZeroMQ - High-Speed Subscribers
 ===============================
-
 Example of High-Speed Subscriber Patterns in ZeroMQ
 
 .. image:: https://storage.googleapis.com/ryansmccoy/zeromq_high_speed.png
