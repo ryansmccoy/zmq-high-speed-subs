@@ -4,9 +4,8 @@ ZeroMQ - High-Speed Subscribers
 
 Example of High-Speed Subscriber Patterns in ZeroMQ
 
-.. image:: https://raw.githubusercontent.com/ryansmccoy/zeromq-high-speed-subscribers/master/docs/fig56.png
+.. image:: https://storage.googleapis.com/ryansmccoy/zeromq_high_speed.png
     :width: 700px
-    :align: center
     :height: 500px
     :alt: The Simple Black Box Pattern
 
@@ -57,7 +56,7 @@ Subscriber-to-Pusher
 .. code-block:: bash
 
     $   activate zeromq-high-speed-subscribers
-    $    python zeromq_high_speed_subscribers\_10_manager.py
+    $   python zeromq_high_speed_subscribers\_10_manager.py
 
     Output:
 
@@ -71,8 +70,6 @@ Subscriber-to-Pusher
         2019-07-31 04:57:47,590 INFO     [ZMQSubscriber(31384)] Total Messages Per Second:	4851.64
         2019-07-31 04:57:47,591 INFO     [ZMQSubscriber(31384)]
         2019-07-31 04:57:47,591 INFO     [ZMQSubscriber(31384)] Current _Queue Size:	23
-        2019-07-31 04:57:47,591 INFO     [ZMQSubscriber(31384)]
-        2019-07-31 04:57:47,592 INFO     [ZMQSubscriber(31384)] b'6491078 2019-07-31 04:57:47:587222,Q,QQQ,None'
         2019-07-31 04:57:47,592 INFO     [ZMQSubscriber(31384)]
 
         2019-07-31 04:57:55,951 INFO     [ZMQPusher(45028)]
