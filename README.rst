@@ -14,19 +14,19 @@ Setup Environment & Run Example  (Windows):
 
 .. code-block:: batch
 
-    git clone https://github.com/ryansmccoy/zeromq-high-speed-subscribers
-    cd zeromq-high-speed-subscribers
-    conda create -n zeromq-high-speed-subscribers1 python=3.7 -y
-    activate zeromq-high-speed-subscribers1
+    git clone https://github.com/ryansmccoy/zmq-high-speed-subs
+    cd zmq-high-speed-subs
+    conda create -n zmq-high-speed-subs python=3.7 -y
+    activate zmq-high-speed-subs
     pip install -r requirements.txt
 
 Setup Environment & Run Example (Linux):
 
 .. code-block:: batch
 
-    git clone https://github.com/ryansmccoy/zeromq-high-speed-subscribers
-    cd zeromq-high-speed-subscribers
-    conda create -n zeromq-high-speed-subscribers python=3.7 -y
+    git clone https://github.com/ryansmccoy/zmq-high-speed-subs
+    cd zmq-high-speed-subs
+    conda create -n zmq-high-speed-subs python=3.7 -y
     pip install -r requirements.txt
 
 To run, open seperate terminal windows, run:
@@ -35,8 +35,8 @@ Publisher
 
 .. code-block:: bash
 
-    $   activate zeromq-high-speed-subscribers
-    $   python zeromq_high_speed_subscribers/_00_publish_data_feed.py
+    $   activate zmq-high-speed-subs
+    $   python zmq-high-speed-subs/_00_publish_data_feed.py
 
     Output:
 
@@ -54,8 +54,8 @@ Subscriber-to-Pusher
 
 .. code-block:: bash
 
-    $   activate zeromq-high-speed-subscribers
-    $   python zeromq_high_speed_subscribers\_10_manager.py
+    $   activate zmq-high-speed-subs
+    $   python zmq-high-speed-subs\_10_manager.py
 
     Output:
 
@@ -106,5 +106,5 @@ Subscriber-to-Pusher
 
 
 * Free software: MIT license
-* Documentation: https://zeromq-high-speed-subscribers.readthedocs.io.
+* Documentation: https://zmq-high-speed-subs.readthedocs.io.
 
