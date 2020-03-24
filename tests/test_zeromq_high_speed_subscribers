@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Tests for `zeromq_high_speed_subscribers` package."""
+"""Tests for `zmq_high_speed_subs` package."""
 
 
 import unittest
 from click.testing import CliRunner
 
 
-from zeromq_high_speed_subscribers import zeromq_high_speed_subscribers
-from zeromq_high_speed_subscribers import cli
+from zmq_high_speed_subs import zeromq_high_speed_subscribers
+from zmq_high_speed_subs import cli
 
 
 class Testzeromq_high_speed_subscribers(unittest.TestCase):
-    """Tests for `zeromq_high_speed_subscribers` package."""
+    """Tests for `zmq_high_speed_subs` package."""
 
     def setUp(self):
         """Set up test fixtures, if any."""
@@ -29,7 +29,7 @@ class Testzeromq_high_speed_subscribers(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(cli.main)
         assert result.exit_code == 0
-        assert 'zeromq_high_speed_subscribers.cli.main' in result.output
+        assert 'zmq_high_speed_subs.cli.main' in result.output
         help_result = runner.invoke(cli.main, ['--help'])
         assert help_result.exit_code == 0
         assert '--help  Show this message and exit.' in help_result.output
