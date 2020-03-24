@@ -36,7 +36,7 @@ Publisher
 .. code-block:: bash
 
     $   activate zmq-high-speed-subs
-    $   python zmq-high-speed-subs/_00_publish_data_feed.py
+    $   python zmq_high_speed_subs\_00_publisher_fakefeed.py
 
     Output:
 
@@ -55,7 +55,7 @@ Subscriber-to-Pusher
 .. code-block:: bash
 
     $   activate zmq-high-speed-subs
-    $   python zmq-high-speed-subs\_10_manager.py
+    $   python zmq_high_speed_subs/_10_manager.py
 
     Output:
 
@@ -103,6 +103,18 @@ Subscriber-to-Pusher
         2019-07-31 04:57:53,608 INFO     [Worker    (23848)]
         2019-07-31 04:57:53,608 INFO     [Worker    (23848)] COMPLETED
         2019-07-31 04:57:53,608 INFO     [Worker    (23848)]
+
+
+If want to connect to database, rename .env.template to .env and enter your data base info:
+
+.. code-block:: bash
+
+    # .env
+    DB_HOST=localhost
+    DB_DATABASE=zmq-example
+    DB_TABLE=data
+    DB_USERNAME=python
+    DB_PASSWORD=h1ghsp33d
 
 
 * Free software: MIT license

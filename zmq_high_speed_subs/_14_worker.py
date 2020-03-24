@@ -13,10 +13,12 @@ from queue import Empty
 
 import numpy as np
 import pandas as pd
+
 try:
     from message_transformer import MessageValidator
 except:
     from utils import MessageValidator
+
 from utils import setup_db_connection, setup_logging
 
 class Worker(MessageValidator, multiprocessing.Process):
@@ -51,7 +53,7 @@ class Worker(MessageValidator, multiprocessing.Process):
         self.time_total = 0
 
     def run(self):
-        self.inititialize()
+        # self.inititialize()
         self.engine = setup_db_connection()
         self.logger = multiprocessing.get_logger()
         self.logger.handlers[0] = setup_logging()
@@ -120,8 +122,15 @@ class Worker(MessageValidator, multiprocessing.Process):
                 df = df.sort_values(['ask_time', 'symbol'])
                 # for symbol, df_g in df.groupby(['symbol']):
                 #     df_g.to_sql(name=f"{symbol}_LVL1_Q_V2", con=engine, index=False, if_exists="append")
-                df.to_sql(name=self.table_name, con=self.engine, index=False, if_exists="append")
-                self.logger.debug(f'Completed to Insert into Database')
+                if self.engine:
+                    df.to_sql(name=self.table_name, con=self.engine, index=False, if_exists="append")
+                    self.logger.debug(f'Completed to Insert into Database')
+                else:
+                    self.logger.debug(f'Couldnt find DB Connection')
+                    del df
+
+                return
+
             except Exception as e:
                 self.logger.error(e)
                 try:

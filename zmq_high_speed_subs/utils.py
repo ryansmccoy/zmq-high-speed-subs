@@ -61,7 +61,7 @@ class FakeFeedCSV:
     """Generates a Repeating Feed of Data for Benchmarking/Testing
     176,    Q,RISJ,nan,207.95,nan,11,100,03:01.3,
     """
-    def __init__(self, sleep_time: (int or float) = 1.0, filepath=f'zeromq_high_speed_subscribers/test_data.csv'):
+    def __init__(self, sleep_time: (int or float) = 1.0, filepath=f'zmq_high_speed_subs/test_data.csv'):
         self.filepath = filepath
         self.sleep_time = sleep_time
         try:
