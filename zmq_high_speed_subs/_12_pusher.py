@@ -12,7 +12,10 @@ from datetime import datetime
 
 import zmq
 
-from utils import MessageHandler, setup_logging
+from message_handler import MessageHandler
+from utils import setup_logging
+
+
 
 class ZMQPusherQueue(multiprocessing.Process, MessageHandler):
     def __init__(self, queue, kill_switch, host=r'127.0.0.1', port="5559", interval_time=10, check_messages=False, show_messages=False):
@@ -91,79 +94,81 @@ class ZMQPusherQueue(multiprocessing.Process, MessageHandler):
                     counter_messages_period = 0
                     # time.sleep(1)
 
-class ZMQPusherAsync:
-    """
-    Not Entirely sure I'm doing Async Correctly
-    """
-    def __init__(self, port="5559"):
-        self.ctx = zmq.asyncio.Context()
-        self.push_socket = self.ctx.socket(zmq.PUSH)
-        self.port = port
-        self.counter = 0
-        self.counter_print = 0
-        self.shutdown_messages = ["stop"] * 5
-        self.logger.info(f"\n\tStarting Pusher on {port}")
-
-    async def handle(self, queue):
-        self.push_socket.bind(f'tcp://*:{self.port}')
-
-        while True:
-            msg = await queue.get()
-            self.counter += 1
-            self.counter_print += 1
-
-            if self.counter_print >= 1000:
-                self.logger.info(f'{datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")}')
-                self.logger.info(f"\n[INFO/ZMQPusher] ->\t {msg[0:100]}")
-                self.counter_print = 0
-
-            if msg[0:4] == "stop":
-                # the producer emits None to indicate that it is done
-                [self.push_socket.send_string(message) for message in self.shutdown_messages]
-                self.logger.info("\nStarting Shutdown...")
-                await asyncio.sleep(10)
-                self.push_socket.close()
-                self.ctx.term()
-                return
-            else:
-                # self.logger.info(f"PUSH -> {msg[0:100]}")
-                self.push_socket.send_string(msg)
-                queue.task_done()
-
-class ZMQPusherPipe(multiprocessing.Process, MessageHandler):
-    def __init__(self, pipe_connection, stop_event, host=r'127.0.0.1', port="5559", check_messages=False):
-        self.url = f'tcp://{host}:{port}'
-        self.pipe = pipe_connection
-        self.stop_event = stop_event
-        self.check_messages = check_messages
-        multiprocessing.Process.__init__(self)
-
-    def run(self):
-        self.initialize(self.stop_event)
-        self.logger = multiprocessing.get_logger()
-        self.logger.info("Initializing ZMQSubscriber")
-        self.logger.info(f"Starting ZMQ \t{datetime.now()}")
-
-        ctx = zmq.Context()
-        with ctx.socket(zmq.PUSH) as zmq_socket:
-            zmq_socket.setsockopt(zmq.SNDHWM, 10000)
-            zmq_socket.setsockopt(zmq.RCVHWM, 10000)
-            zmq_socket.bind(self.url)
-            while not self.stop_event.is_set():
-
-                # receive message and push to worker processes
-                message = self.pipe.recv()
-
-                # flag to turn on and off check messages
-                if self.check_messages:
-                    self.check_message(message)
-
-                # zmq_socket.send_string(message)
-                zmq_socket.send(message)
-
-            # send stop messages to potential workers
-            for x in range(10):
-                # zmq_socket.send_string(message)
-                # zmq_socket.send(message)
-                zmq_socket.send(message)
-
+#
+# class ZMQPusherAsync:
+#     """
+#     Not Entirely sure I'm doing Async Correctly
+#     """
+#
+#     def __init__(self, port="5559"):
+#         self.ctx = zmq.asyncio.Context()
+#         self.push_socket = self.ctx.socket(zmq.PUSH)
+#         self.port = port
+#         self.counter = 0
+#         self.counter_print = 0
+#         self.shutdown_messages = ["stop"] * 5
+#         self.logger.info(f"\n\tStarting Pusher on {port}")
+#
+#     async def handle(self, queue):
+#         self.push_socket.bind(f'tcp://*:{self.port}')
+#
+#         while True:
+#             msg = await queue.get()
+#             self.counter += 1
+#             self.counter_print += 1
+#
+#             if self.counter_print >= 1000:
+#                 self.logger.info(f'{datetime.now().strftime("%m-%d-%Y_%H:%M:%S:%f,")}')
+#                 self.logger.info(f"\n[INFO/ZMQPusher] ->\t {msg[0:100]}")
+#                 self.counter_print = 0
+#
+#             if msg[0:4] == "stop":
+#                 # the producer emits None to indicate that it is done
+#                 [self.push_socket.send_string(message) for message in self.shutdown_messages]
+#                 self.logger.info("\nStarting Shutdown...")
+#                 await asyncio.sleep(10)
+#                 self.push_socket.close()
+#                 self.ctx.term()
+#                 return
+#             else:
+#                 # self.logger.info(f"PUSH -> {msg[0:100]}")
+#                 self.push_socket.send_string(msg)
+#                 queue.task_done()
+#
+#
+# class ZMQPusherPipe(multiprocessing.Process, MessageHandler):
+#     def __init__(self, pipe_connection, stop_event, host=r'127.0.0.1', port="5559", check_messages=False):
+#         self.url = f'tcp://{host}:{port}'
+#         self.pipe = pipe_connection
+#         self.stop_event = stop_event
+#         self.check_messages = check_messages
+#         multiprocessing.Process.__init__(self)
+#
+#     def run(self):
+#         self.initialize(self.stop_event)
+#         self.logger = multiprocessing.get_logger()
+#         self.logger.info("Initializing ZMQSubscriber")
+#         self.logger.info(f"Starting ZMQ \t{datetime.now()}")
+#
+#         ctx = zmq.Context()
+#         with ctx.socket(zmq.PUSH) as zmq_socket:
+#             zmq_socket.setsockopt(zmq.SNDHWM, 10000)
+#             zmq_socket.setsockopt(zmq.RCVHWM, 10000)
+#             zmq_socket.bind(self.url)
+#             while not self.stop_event.is_set():
+#
+#                 # receive message and push to worker processes
+#                 message = self.pipe.recv()
+#
+#                 # flag to turn on and off check messages
+#                 if self.check_messages:
+#                     self.check_message(message)
+#
+#                 # zmq_socket.send_string(message)
+#                 zmq_socket.send(message)
+#
+#             # send stop messages to potential workers
+#             for x in range(10):
+#                 # zmq_socket.send_string(message)
+#                 # zmq_socket.send(message)
+#                 zmq_socket.send(message)

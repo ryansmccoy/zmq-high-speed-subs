@@ -7,20 +7,23 @@ MIT License
 """
 import logging
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
 
 from sqlalchemy import create_engine
 import urllib.parse
-import datetime
 import multiprocessing
 
 import time
 from itertools import cycle
 import pandas as pd
 
+
 class MessageValidator:
+
+
     _update_fields_list = ['Symbol', '7 Day Yield', 'Ask', 'Ask Change',
                            'Ask Market Center', 'Ask Size', 'Ask Time',
                            'Available Regions', 'Average Maturity', 'Bid',
@@ -46,7 +49,7 @@ class MessageValidator:
     def __init__(self):
         pass
 
-    def process_message(self, message):
+    def process_message(self, message: str, retry=False):
         """
         Pretent to do some processing/transformation
         :param self:
@@ -61,6 +64,7 @@ class FakeFeedCSV:
     """Generates a Repeating Feed of Data for Benchmarking/Testing
     176,    Q,RISJ,nan,207.95,nan,11,100,03:01.3,
     """
+
     def __init__(self, sleep_time: (int or float) = 1.0, filepath=f'zmq_high_speed_subs/test_data.csv'):
         self.filepath = filepath
         self.sleep_time = sleep_time
@@ -74,7 +78,7 @@ class FakeFeedCSV:
         counter = 0
 
         for idx, df_ in enumerate(df.index):
-            msg = f"{counter}," + ",".join(list(df.iloc[idx,:].astype(str).to_dict().values())).replace("nan","")
+            msg = f"{counter}," + ",".join(list(df.iloc[idx, :].astype(str).to_dict().values())).replace("nan", "")
             self.messages.append(msg)
 
     def __iter__(self):
@@ -87,10 +91,12 @@ class FakeFeedCSV:
             yield msg
             # time.sleep(self.sleep_time)
 
+
 class FakeFeedSQL:
     """Generates a Repeating Feed of Data for Benchmarking/Testing
     123,MSFT,None,141.46,0.01,18,800,48463271015,
     """
+
     def __init__(self, sleep_time: (int or float) = 1.0, filepath=f'zeromq_high_speed_subscribers/test_data.csv'):
         self.sql = """SELECT TOP (500) * FROM [20190726_LVL1_Q2]"""
         self.sleep_time = sleep_time
@@ -112,83 +118,58 @@ class FakeFeedSQL:
 
         for chunk in pd.read_sql_query(self.sql, self.engine, chunksize=50):
             counter += 1
-            msg = f"{counter}," + ",".join(list(chunk.iloc[0,:].astype(str).to_dict().values()))
+            msg = f"{counter}," + ",".join(list(chunk.iloc[0, :].astype(str).to_dict().values()))
             print(msg)
             yield msg
             time.sleep(self.sleep_time)
 
-class MessageHandler:
 
-    def initialize(self, show_messages=False, check_messages=True, status_update=True):
-        self.logger = multiprocessing.get_logger()
-        self.counter_messages_cum = 0
-        self.counter_messages = 0
-        self.status_update_counter = 0
-        self.sleep_counter = 0
-        self.queue_update_counter = 0
-        self.show_messages = show_messages
-        self.check_messages = check_messages
-        self.status_update = status_update
 
-    def update_counters(self):
+import logging
 
-        self.status_update_counter += 1
-        self.counter_messages += 1
-        self.sleep_counter += 1
-        self.queue_update_counter += 1
+class CustomFormatter(logging.Formatter):
+    """Logging Formatter to add colors and count warning / errors"""
 
-    def check_message(self, message):
+    grey = "\x1b[38;21m"
+    yellow = "\x1b[33;21m"
+    red = "\x1b[31;21m"
+    bold_red = "\x1b[31;1m"
+    reset = "\x1b[0m"
+    # format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+    format = '%(asctime)s %(levelname)-8s [%(processName)-10s(%(process)d)] %(message)s'
 
-        self.update_counters()
+    FORMATS = {
+        logging.DEBUG: grey + format + reset,
+        logging.INFO: grey + format + reset,
+        logging.WARNING: yellow + format + reset,
+        logging.ERROR: red + format + reset,
+        logging.CRITICAL: bold_red + format + reset
+    }
 
-        if not self.check_messages:
-            return
-        ##############################
-        if self.show_messages:
-            self.show_message(message)
-
-        if self.status_update and self.status_update_counter >= 1000:
-            self.status_update_display(message)
-            self.status_update_counter = 0
-
-        if self.sleep_counter >= 50000:
-            self.sleep_counter = 0
-
-        # shutdown if receive stop message
-        if message[0:4] == "stop":
-            self.stop_message(message)
-
-    def show_message(self, message):
-        # self.logger.info(f"Show Message:\t{message[0:45]}")
-        self.time_start = time.time()
-        self.show_messages = False
-
-    def status_update_display(self, message):
-        # self.logger.info(f"Status Count:\t{self.counter_messages}\t{message[0:5]}")
-        self.status_update_counter = 0
-
-    def stop_message(self, message):
-        end_time = datetime.datetime.now()
-        # the producer emits None to indicate that it is done
-        self.logger.info(f'Shutdown Received\t{end_time}')
-        self.logger.info(f'Start Time:\t{self.time_start}')
-        time_end = time.time()
-        total_time = time_end - self.time_start
-        self.logger.info(f'Time Elapsed:\t{round(total_time, 2)} seconds')
-        self.logger.info(f'Total Messages:\t{self.counter_messages}')
-        self.logger.info(f'Messages Per Second:\t{round(self.counter_messages / total_time, 3)}')
+    def format(self, record):
+        log_fmt = self.FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt)
+        return formatter.format(record)
 
 def setup_logging():
+    # import coloredlogs, logging
+    # coloredlogs.install()
+
+    # logging.info("It works!")
     c_handler = logging.StreamHandler()
     c_handler.setLevel(logging.INFO)
     # Create formatters and add it to handlers
-    c_format = logging.Formatter('%(asctime)s %(levelname)-8s [%(processName)-10s(%(process)d)] %(message)s')
-    c_handler.setFormatter(c_format)
+    # c_format = logging.Formatter('%(asctime)s %(levelname)-8s [%(processName)-10s(%(process)d)] %(message)s')
+    # c_handler.setFormatter(c_format)
+    c_handler.setFormatter(CustomFormatter())
+
     return c_handler
+
 
 def initializer(level):
     global logger
     logger = multiprocessing.log_to_stderr(level)
+
 
 def setup_db_connection(driver='sqlalchemy', echo=False):
 
@@ -213,3 +194,6 @@ def setup_db_connection(driver='sqlalchemy', echo=False):
             print("\n\tProblem Connecting to Database")
             print(E)
             return False
+
+    else:
+        return False

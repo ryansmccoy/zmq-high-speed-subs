@@ -5,21 +5,23 @@ Copyright (C) 2019 Ryan S. McCoy <github@ryansmccoy.com>
 MIT License
 
 """
-import multiprocessing
 import datetime
+import logging
+import multiprocessing
 import time
 from datetime import datetime
 
 import zmq
+
 from utils import FakeFeedSQL, FakeFeedCSV
-from utils import setup_logging,initializer
-import logging
+from utils import setup_logging, initializer
+
 
 class FeedPublisher(multiprocessing.Process):
     def __init__(self, kill_switch, sleep_time=1.0, fake_feed="CSV", host="*", port="5558"):
         self.kill_switch = kill_switch
         self.sleep_time = sleep_time
-        self.fake_feed=fake_feed
+        self.fake_feed = fake_feed
         self.url = f'tcp://{host}:{port}'
         multiprocessing.Process.__init__(self)
 
@@ -65,7 +67,7 @@ class FeedPublisher(multiprocessing.Process):
                 for idx, item in enumerate(fakefeed):
                     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f,")
                     text = 'Q,' + item[2:]
-                    message =  f"{idx} {timestamp}" + text
+                    message = f"{idx} {timestamp}" + text
                     # packed = msgpack.packb(message)
                     self.zmq_socket.send(message.encode('utf-8'))
 
@@ -88,7 +90,7 @@ class FeedPublisher(multiprocessing.Process):
                         self.logger.info(f'')
                         self.logger.info(f'Total Messages Published :\t{counter_messages_total}')
                         self.logger.info(f'')
-                        self. logger.info(f'\n\n')
+                        self.logger.info(f'\n\n')
                         counter_messages_period = 0
                         time_start = time.time()
 
@@ -96,6 +98,7 @@ class FeedPublisher(multiprocessing.Process):
                     break
 
         self.send_shutdown()
+
 
 if __name__ == "__main__":
     initializer(logging.DEBUG)
@@ -106,13 +109,10 @@ if __name__ == "__main__":
 
     try:
         fake_feed.join()
-    except KeyboardInterrupt as e :
+    except KeyboardInterrupt as e:
         print('\nSTOP')
         kill_switch.set()
     except Exception as e:
         kill_switch.set()
     finally:
         time.sleep(5)
-
-
-
