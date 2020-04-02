@@ -36,7 +36,7 @@ Publisher
 .. code-block:: bash
 
     $   activate zmq-high-speed-subs
-    $   python zmq_high_speed_subs\_00_publisher_fakefeed.py
+    $   python zmq_high_speed_subs\publisher_fakefeed.py
 
     Output:
 

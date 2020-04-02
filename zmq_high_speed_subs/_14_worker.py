@@ -14,20 +14,23 @@ from queue import Empty
 import numpy as np
 import pandas as pd
 
-try:
-    from message_transformer import MessageValidator
-except:
-    from utils import MessageValidator
+pd.set_option("display.float_format", lambda x: "%.5f" % x)  # pandas
+pd.set_option("display.max_columns", 100)
+pd.set_option("display.max_rows", 100)
+pd.set_option("display.width", 600)
+
+from message_handler import MessageHandler
 
 from utils import setup_db_connection, setup_logging
 
-class Worker(MessageValidator, multiprocessing.Process):
+
+class Worker(MessageHandler, multiprocessing.Process):
     """
     The Worker's Sole Purpose in Life is to take Data from it's Queue, Format it, and then Insert into Database
     """
     name = "Worker"
 
-    def __init__(self, queue,status_queue, kill_switch, interval_time=30):
+    def __init__(self, queue, status_queue, kill_switch, interval_time=30):
         super().__init__()
         multiprocessing.Process.__init__(self)
         self.status_queue = status_queue
@@ -36,27 +39,17 @@ class Worker(MessageValidator, multiprocessing.Process):
         self.kill_switch = kill_switch
         self.show_first_message = True
         self.table_name = f"{datetime.now().strftime('%Y%m%d')}_LVL1"
-
-        # counters for benchmarking
-        self.counter = 0
-        self.counter_messages_current = 0
-        self.counter_total_database = 0
-        self.counter_total_manager = 0
-        self.current_loop_iteration = 0
-        self.counter_messages_total = 0
-        self.counter_messages_period = 0
-        self.counter_messages_period_sleep = 0
-        self.counter_messages_current = 0
-        self.counter_total_consumer = 0
-        self.counter_messages_period_sleep = 0
-        self.counter_messages_total = 0
-        self.time_total = 0
+        self.initialize_counters()
 
     def run(self):
-        # self.inititialize()
-        self.engine = setup_db_connection()
+        """
+        Starts worker that connects to the Pusher
+        """
+        self.initialize()
+        self.engine = setup_db_connection(driver="Fake")
         self.logger = multiprocessing.get_logger()
         self.logger.handlers[0] = setup_logging()
+
         print("\n\n")
         self.logger.debug("")
         self.logger.debug(f'Spawning Worker')
@@ -65,9 +58,6 @@ class Worker(MessageValidator, multiprocessing.Process):
         self.time_start_process = time.time()
         self.time_start_cycle = time.time()
 
-        """
-        Starts worker that connects to the Pusher
-        """
         np_array = self.get_data_from_queue()
         self.insert_data_into_database(np_array)
         self.check_status("COMPLETED")
@@ -78,16 +68,17 @@ class Worker(MessageValidator, multiprocessing.Process):
         self.current_loop_iteration = 0
         self.current_loop_pause = 0
 
-        np_array = self._empty_update_msg
+        np_array = np.zeros(1, dtype=self._field_dtype)
 
         while not self.kill_switch.is_set():
             try:
                 packed = self.queue.get()
-                if packed == "END":
+                if packed == "--END--":
                     break
 
                 message = packed.decode().split(',')
-                array = self.process_message(message[1:])
+
+                array = self.process_message(message)
                 np_array = np.append(np_array, array[0])
                 self.check_status(message)
 
@@ -122,13 +113,13 @@ class Worker(MessageValidator, multiprocessing.Process):
                 df = df.sort_values(['ask_time', 'symbol'])
                 # for symbol, df_g in df.groupby(['symbol']):
                 #     df_g.to_sql(name=f"{symbol}_LVL1_Q_V2", con=engine, index=False, if_exists="append")
+
                 if self.engine:
                     df.to_sql(name=self.table_name, con=self.engine, index=False, if_exists="append")
                     self.logger.debug(f'Completed to Insert into Database')
                 else:
                     self.logger.debug(f'Couldnt find DB Connection')
                     del df
-
                 return
 
             except Exception as e:
@@ -139,6 +130,23 @@ class Worker(MessageValidator, multiprocessing.Process):
                     with open(os.path.join('d:\\', f"{datetime.now()}.csv".replace(":", "-")), "w") as f:
                         f.write("\n".join(",".join(map(str, x)) for x in (np_array)))
 
+
+    def initialize_counters(self):
+        # counters for benchmarking
+        self.counter = 0
+        self.counter_messages_current = 0
+        self.counter_total_database = 0
+        self.counter_total_manager = 0
+        self.current_loop_iteration = 0
+        self.counter_messages_total = 0
+        self.counter_messages_period = 0
+        self.counter_messages_period_sleep = 0
+        self.counter_messages_current = 0
+        self.counter_total_consumer = 0
+        self.counter_messages_period_sleep = 0
+        self.counter_messages_total = 0
+        self.time_total = 0
+
     def check_status(self, message=None):
 
         self.current_loop_iteration += 1
@@ -146,18 +154,15 @@ class Worker(MessageValidator, multiprocessing.Process):
         self.counter_total_database += 1
         self.counter_total_manager += 1
         self.counter_messages_period += 1
-        # self.counter_messages_period_sleep += 1
         self.counter_messages_total += 1
 
         if time.time() - self.time_start_cycle > self.interval_time or message == "COMPLETED":
             time_now = time.time()
             time_cycle = time_now - self.time_start_cycle
             self.time_total = self.time_total + time_cycle
-            self.logger.debug(f'')
-            self.logger.debug(f'Worker Messages Time Elapsed:\t{round(self.time_total, 2)} seconds')
+            self.logger.info(f'Worker Messages Time Elapsed:\t{round(self.time_total, 2)} seconds')
             self.logger.debug(f'Worker Messages:\t{self.counter_total_manager}')
-            self.logger.debug(f'Worker Messages Per Second:\t{round((self.counter_total_manager / self.time_total), 2)}')
-            self.logger.debug(f'')
+            self.logger.info(f'Worker Messages Per Second:\t{round((self.counter_total_manager / self.time_total), 2)}\n\n')
             self.logger.debug(f"{message}")
             self.time_start_cycle = time.time()
             self.logger.debug(f'\n\n')
