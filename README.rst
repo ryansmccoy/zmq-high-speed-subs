@@ -10,6 +10,8 @@ Example of High-Speed Subscriber Patterns in ZeroMQ
 
 * ZeroMQ Guide: http://zguide.zeromq.org/py:chapter5#toc5
 
+A common use case for pub-sub is distributing large data streams like market data coming from stock exchanges. A typical setup would have a publisher connected to a stock exchange, taking price quotes, and sending them out to a number of subscribers. If there are a handful of subscribers, we could use TCP. If we have a larger number of subscribers, we'd probably use reliable multicast, i.e., PGM.
+
 Setup Environment & Run Example  (Windows):
 
 .. code-block:: batch
