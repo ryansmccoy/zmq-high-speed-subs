@@ -15,7 +15,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/ryansmccoy/zeromq-high-speed-subscribers/issues.
+Report bugs at https://github.com/ryansmccoy/zmq-high-speed-subs/issues.
 
 If you are reporting a bug, please include:
 
@@ -45,7 +45,7 @@ articles, and such.
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/ryansmccoy/zeromq-high-speed-subscribers/issues.
+The best way to send feedback is to file an issue at https://github.com/ryansmccoy/zmq-high-speed-subs/issues.
 
 If you are proposing a feature:
 
@@ -57,17 +57,17 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `zeromq-high-speed-subscribers` for local development.
+Ready to contribute? Here's how to set up `zmq-high-speed-subs` for local development.
 
-1. Fork the `zeromq-high-speed-subscribers` repo on GitHub.
+1. Fork the `zmq-high-speed-subs` repo on GitHub.
 2. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/zeromq-high-speed-subscribers.git
+    $ git clone git@github.com:your_name_here/zmq-high-speed-subs.git
 
 3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
 
-    $ mkvirtualenv zeromq-high-speed-subscribers
-    $ cd zeromq-high-speed-subscribers/
+    $ mkvirtualenv zmq-high-speed-subs
+    $ cd zmq-high-speed-subs/
     $ python setup.py develop
 
 4. Create a branch for local development::
@@ -79,7 +79,7 @@ Ready to contribute? Here's how to set up `zeromq-high-speed-subscribers` for lo
 5. When you're done making changes, check that your changes pass flake8 and the
    tests, including testing other Python versions with tox::
 
-    $ flake8 zeromq-high-speed-subscribers tests
+    $ flake8 zmq-high-speed-subs tests
     $ python setup.py test or py.test
     $ tox
 

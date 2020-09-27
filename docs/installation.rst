@@ -38,7 +38,7 @@ Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/ryansmccoy/zeromq-high-speed-subscribers/tarball/master
+    $ curl  -OL https://github.com/ryansmccoy/zmq-high-speed-subs/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/ryansmccoy/zeromq-high-speed-subscribers
-.. _tarball: https://github.com/ryansmccoy/zeromq-high-speed-subscribers/tarball/master
+.. _Github repo: https://github.com/ryansmccoy/zmq-high-speed-subs
+.. _tarball: https://github.com/ryansmccoy/zmq-high-speed-subs/tarball/master

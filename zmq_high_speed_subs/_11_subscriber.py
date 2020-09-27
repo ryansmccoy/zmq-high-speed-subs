@@ -9,6 +9,7 @@ import datetime
 import multiprocessing
 import time
 from datetime import datetime
+import logging
 
 import zmq
 from message_handler import MessageHandler
@@ -59,6 +60,7 @@ class ZMQSubscriberQueue(multiprocessing.Process, MessageHandler):
 
                 # if self.check_messages:
                 self.check_message(message)
+
                 counter_messages_period += 1
                 counter_total += 1
 
@@ -142,3 +144,37 @@ class ZMQSubscriberQueue(multiprocessing.Process, MessageHandler):
 #                     self.check_message(message)
 #
 #                 self.pipe.send(message)
+
+if __name__ == "__main__":
+
+    from utils import setup_logging, initializer
+
+    kill_switch = multiprocessing.Event()
+
+    initializer(logging.DEBUG)
+
+    queue_sub_to_push = multiprocessing.Queue()
+
+    subscriber = ZMQSubscriberQueue(queue_sub_to_push, kill_switch, host='127.0.0.1', port="5558")
+
+    from _10_manager import ServiceManager
+
+    service_manager = ServiceManager(subscriber,pusher=None, puller=None, kill_switch=kill_switch, port=55555)
+
+    try:
+        s = service_manager.get_server()
+        s.serve_forever()
+    except KeyboardInterrupt:
+        print('parent received ctrl-c')
+
+        kill_switch.set()
+        subscriber.join()
+        subscriber.terminate()
+
+    except Exception as e:
+        print(f"Exception {e}")
+        kill_switch.set()
+        subscriber.join()
+
+    finally:
+        subscriber.terminate()

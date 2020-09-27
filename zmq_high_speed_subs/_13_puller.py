@@ -82,10 +82,8 @@ class ZMQPuller(multiprocessing.Process):
         self._receive_thread = threading.Thread(target=_zmq_puller, args=(self.message_queue, self.zmq_pull_url,), name="ZMQPullerThread")
         self._receive_thread.start()
 
-        self.logger.info("")
-        self.logger.info("")
+        self.logger.info("\n\n")
         self.logger.info(f'\tSpawning ZMQPuller')
-        self.logger.info("")
         self.logger.info("\n\n")
         self.running_workers = defaultdict(list)
         self.finished_workers_and_queues = defaultdict(list)

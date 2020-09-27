@@ -5,38 +5,21 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+array_columns = ['timestamp_received','symbol', '7_day_yield', 'ask', 'ask_change', 'ask_market_center', 'ask_size', 'ask_time', 'available_regions', 'average_maturity', 'bid', 'bid_change', 'bid_market_center', 'bid_size', 'bid_time', 'change', 'change_from_open', 'close', 'close_range_1', 'close_range_2', 'days_to_expiration', 'decimal_precision', 'delay', 'exchange_id', 'extended_trade', 'extended_trade_date', 'extended_trade_market_center', 'extended_trade_size', 'extended_trade_time', 'extended_trading_change', 'extended_trading_difference', 'financial_status_indicator', 'fraction_display_code', 'high', 'last', 'last_date', 'last_market_center', 'last_size', 'last_time', 'low', 'market_capitalization', 'market_open', 'message_contents', 'most_recent_trade', 'most_recent_trade_conditions', 'most_recent_trade_date', 'most_recent_trade_market_center', 'most_recent_trade_size', 'most_recent_trade_time', 'net_asset_value', 'number_of_trades_today', 'open', 'open_interest', 'open_range_1', 'open_range_2', 'percent_change', 'percent_off_average_volume', 'previous_day_volume', 'price-earnings_ratio', 'range', 'restricted_code', 'settle', 'settlement_date', 'spread', 'tick', 'tickid', 'total_volume', 'volatility', 'vwap', 'timestamp_inserted']
+
+packed = b'SPY,,328.11,0.01,5,600,30207883071,,,328.09,0.01,26,800,30207883071,0,,324.12,,,0,4,0,7,,00:00.0,5,500,30205418926,3.99,3.99,N,14,,324.12,00:00.0,11,100,72000003024,,309382912,0,ba,328.11,173D,00:00.0,5,500,30205418926,,2183,,0,,,0,-0.984107,69242293,,,0,,00:00.0,0.02,0,,1063916,,327.7901,23:16.2'
+
 class MessageHandler:
 
-    _field_dtype = [('Symbol', 'S128'), ('Ask', '<f8'),
-                    ('Ask Change', '<f8'), ('Ask Market Center', 'u1'),
-                    ('Ask Size', '<u8'), ('Ask Time', '<u8'), ('Available Regions', 'S128'),
-                    ('Average Maturity', '<f8'), ('Bid', '<f8'), ('Bid Change', '<f8'),
-                    ('Bid Market Center', 'u1'), ('Bid Size', '<u8'), ('Bid Time', '<u8'),
-                    ('Change', '<f8'), ('Change From Open', '<f8'),
-                    ('Close', '<f8'), ('Close Range 1', '<f8'), ('Close Range 2', '<f8'),
-                    ('Days to Expiration', '<u2'), ('Decimal Precision', 'u1'), ('Delay', 'u1'),
-                    ('Exchange ID', 'u1'), ('Extended Price', '<f8'),
-                    ('Extended Trade Date', '<M8[D]'), ('Extended Trade Market Center', 'u1'),
-                    ('Extended Trade Size', '<u8'), ('Extended Trade Time', '<u8'),
-                    ('Extended Trading Change', '<f8'),
-                    ('Extended Trading Difference', '<f8'), ('Financial Status Indicator', 'S1'),
-                    ('Fraction Display Code', 'u1'), ('High', '<f8'), ('Last', '<f8'), ('Last Date', '<M8[D]'),
-                    ('Last Market Center', 'u1'),
-                    ('Last Size', '<u8'), ('Last Time', '<u8'), ('Low', '<f8'), ('Market Capitalization', '<f8'),
-                    ('Market Open', '?'), ('Message Contents', 'S9'), ('Most Recent Trade', '<f8'),
-                    ('Most Recent Trade Conditions', 'S16'), ('Most Recent Trade Date', '<M8[D]'),
-                    ('Most Recent Trade Market Center', 'u1'), ('Most Recent Trade Size', '<u8'),
-                    ('Most Recent Trade Time', '<u8'),
-                    ('Net Asset Value', '<f8'), ('Number of Trades Today', '<u8'), ('Open', '<f8'),
-                    ('Open Interest', '<u8'), ('Open Range 1', '<f8'), ('Open Range 2', '<f8'),
-                    ('Percent Change', '<f8'),
-                    ('Percent Off Average Volume', '<f8'), ('Previous Day Volume', '<u8'),
-                    ('Price-Earnings Ratio', '<f8'), ('Range', '<f8'), ('Restricted Code', '?'),
-                    ('Settle', '<f8'), ('Settlement Date', '<M8[D]'),
-                    ('Spread', '<f8'), ('7 Day Yield', '<f8'), ('Tick', '<i8'),
-                    ('TickId', '<u8'), ('Total Volume', '<u8'), ('VWAP', '<f8'), ('Volatility', '<f8')]
-
     def initialize(self, show_messages=False, check_messages=True, status_update=True):
+        self._current_update_fields = []
+        self._update_names = []
+        self._update_reader = []
+        self._num_update_fields = 0
+        self.time_count = 0
+        self.time_flush = False
+        self.fundamental_messages = []
+        self.summary_messages = []
         self.logger = multiprocessing.get_logger()
         self.counter_messages_cum = 0
         self.counter_messages = 0
@@ -50,9 +33,7 @@ class MessageHandler:
     def update_counters(self):
 
         self.status_update_counter += 1
-        self.counter_messages += 1
         self.sleep_counter += 1
-        self.queue_update_counter += 1
 
     def check_message(self, message):
 
@@ -94,3 +75,29 @@ class MessageHandler:
         self.logger.info(f'Time Elapsed:\t{round(total_time, 2)} seconds')
         self.logger.info(f'Total Messages:\t{self.counter_messages}')
         self.logger.info(f'Messages Per Second:\t{round(self.counter_messages / total_time, 3)}')
+
+
+if __name__ == "__main__":
+    from dotenv import load_dotenv
+    import zmq_high_speed_subs.utils as utils
+
+    load_dotenv()
+
+    engine = utils.setup_db_connection()
+    sql = """SELECT TOP (5) * FROM [20190722_LVL1_Q]"""
+    import pandas as pd
+    import numpy as np
+
+    # daily 22,599,788
+    for chunk in pd.read_sql_query(sql, engine, chunksize=5):
+        df = chunk
+        break
+    _empty_update_msg = np.zeros(1, dtype=_field_dtype)
+    df
+    values = df.iloc[0, :].values
+    new_message = ",".join(str(x) for x in list(values))
+
+    process = MessageValidator()
+    fields = process.process_message(new_message)
+
+    df = pd.DataFrame(fields)
