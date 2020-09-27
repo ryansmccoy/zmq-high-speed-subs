@@ -24,8 +24,8 @@ class ServiceManager(SyncManager):
     Publisher -> Subscriber -> Pusher -> Puller -> Workers
     """
 
-    def __init__(self, subscriber, pusher, puller, kill_switch):
-        super().__init__(address=('127.0.0.1', 50000), authkey=b'gotem')
+    def __init__(self, subscriber=None, pusher=None, puller=None, kill_switch=None, port=50000):
+        super().__init__(address=('127.0.0.1', port), authkey=b'gotem')
         self.logger = multiprocessing.get_logger()
         self.logger.handlers[0] = setup_logging()
 
@@ -35,13 +35,19 @@ class ServiceManager(SyncManager):
         self.kill_switch = kill_switch
 
         self.subscriber = subscriber
-        self.subscriber.start()
+
+        if self.subscriber:
+            self.subscriber.start()
 
         self.pusher = pusher
-        self.pusher.start()
+
+        if pusher:
+            self.pusher.start()
 
         self.puller = puller
-        self.puller.start()
+
+        if puller:
+            self.puller.start()
 
 
 if __name__ == "__main__":
@@ -68,6 +74,8 @@ if __name__ == "__main__":
         pusher.join()
         puller.join()
         time.sleep(3)
+
+    finally:
         subscriber.terminate()
         pusher.terminate()
         puller.terminate()

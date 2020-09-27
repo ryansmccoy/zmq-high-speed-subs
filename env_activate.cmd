@@ -1,1 +1,1 @@
-call "C:\PYTHON\Scripts\activate" zeromq-high-speed-subscribers
+call "C:\PYTHON\Scripts\activate" zmq-high-speed-subs

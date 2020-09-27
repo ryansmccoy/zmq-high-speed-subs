@@ -68,7 +68,7 @@ class FeedPublisher(multiprocessing.Process):
                     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f,")
                     text = 'Q,' + item[2:]
                     message = f"{idx} {timestamp}" + text
-                    # packed = msgpack.packb(message)
+
                     self.zmq_socket.send(message.encode('utf-8'))
 
                     counter_messages_period += 1
@@ -77,12 +77,14 @@ class FeedPublisher(multiprocessing.Process):
                     if counter_messages_period > 55000:
                         time.sleep(1)
 
+                    # logging every 10 seconds
+                    # TODO: Make optional
                     if time.time() - time_start > 10:
                         time_now = time.time()
                         total_time = time_now - time_start
                         messages_per_second = round(counter_messages_period / total_time, 2)
                         self.logger.info(f'')
-                        self.logger.info(f"{message}")
+                        self.logger.info(f"{message[0:150]}")
                         self.logger.info(f'')
                         self.logger.info(f'Time Elapsed:\t{round(total_time, 2)} seconds')
                         self.logger.info(f'Messages During Period:\t{counter_messages_period}')
@@ -101,6 +103,8 @@ class FeedPublisher(multiprocessing.Process):
 
 
 if __name__ == "__main__":
+
+
     initializer(logging.DEBUG)
 
     kill_switch = multiprocessing.Event()

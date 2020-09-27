@@ -5,6 +5,8 @@ Copyright (C) 2019 Ryan S. McCoy <github@ryansmccoy.com>
 MIT License
 
 """
+import logging
+
 import asyncio
 import multiprocessing
 import time
@@ -14,8 +16,6 @@ import zmq
 
 from message_handler import MessageHandler
 from utils import setup_logging
-
-
 
 class ZMQPusherQueue(multiprocessing.Process, MessageHandler):
     def __init__(self, queue, kill_switch, host=r'127.0.0.1', port="5559", interval_time=10, check_messages=False, show_messages=False):
@@ -172,3 +172,41 @@ class ZMQPusherQueue(multiprocessing.Process, MessageHandler):
 #                 # zmq_socket.send_string(message)
 #                 # zmq_socket.send(message)
 #                 zmq_socket.send(message)
+
+if __name__ == "__main__":
+
+    from utils import setup_logging, initializer
+
+    kill_switch = multiprocessing.Event()
+
+    initializer(logging.DEBUG)
+
+    queue_sub_to_push = multiprocessing.Queue()
+
+    pusher = ZMQPusherQueue(queue_sub_to_push, kill_switch, host='127.0.0.1', port="5559")
+
+    from _11_subscriber import ZMQSubscriberQueue
+    subscriber = ZMQSubscriberQueue(queue_sub_to_push, kill_switch, host='127.0.0.1', port="5558")
+
+    from _10_manager import ServiceManager
+    service_manager = ServiceManager(subscriber=subscriber,pusher=pusher, puller=None, kill_switch=kill_switch, port=55556)
+
+    try:
+        s = service_manager.get_server()
+        s.serve_forever()
+    except KeyboardInterrupt:
+        print('parent received ctrl-c')
+
+        kill_switch.set()
+        subscriber.join()
+        pusher.join()
+
+    except Exception as e:
+        print(f"Exception {e}")
+        kill_switch.set()
+        pusher.join()
+        subscriber.join()
+
+    finally:
+        subscriber.terminate()
+        pusher.terminate()

@@ -19,10 +19,11 @@ pd.set_option("display.max_columns", 100)
 pd.set_option("display.max_rows", 100)
 pd.set_option("display.width", 600)
 
-from message_handler import MessageHandler
+from settings import BaseConfig
 
-from utils import setup_db_connection, setup_logging
+from zmq_high_speed_subs.message_handler import MessageHandler, array_columns
 
+from zmq_high_speed_subs.utils import setup_db_connection, setup_logging
 
 class Worker(MessageHandler, multiprocessing.Process):
     """
@@ -46,46 +47,64 @@ class Worker(MessageHandler, multiprocessing.Process):
         Starts worker that connects to the Pusher
         """
         self.initialize()
+
         self.engine = setup_db_connection(driver="Fake")
         self.logger = multiprocessing.get_logger()
         self.logger.handlers[0] = setup_logging()
 
-        print("\n\n")
-        self.logger.debug("")
+        self.logger.debug("\n\n")
         self.logger.debug(f'Spawning Worker')
-        self.logger.debug("")
+        self.logger.debug("\n\n")
 
         self.time_start_process = time.time()
         self.time_start_cycle = time.time()
 
-        np_array = self.get_data_from_queue()
-        self.insert_data_into_database(np_array)
+        # -------------------------------
+        #  Start Processing Data
+
+
+        data_unprocessed = self.get_data_from_queue()
+
+        df = pd.DataFrame()
+
+        df = self.process_data(data_unprocessed)
+
+        if not df.empty:
+            self.insert_data_into_database(df)
+
+        # -------------------------------
+
         self.check_status("COMPLETED")
         return
 
-    def get_data_from_queue(self):
+    def get_data_from_queue(self, init_array_size=5000):
 
         self.current_loop_iteration = 0
         self.current_loop_pause = 0
+        count = 0
 
-        np_array = np.zeros(1, dtype=self._field_dtype)
+        # allocate array prior to appending
+        temp_array = [()] * init_array_size
 
         while not self.kill_switch.is_set():
+
             try:
                 packed = self.queue.get()
+
                 if packed == "--END--":
                     break
 
-                message = packed.decode().split(',')
+                message = tuple(packed.decode().split(','))
 
-                array = self.process_message(message)
-                np_array = np.append(np_array, array[0])
+                temp_array[count] = message
+                count += 1
+
                 self.check_status(message)
 
             except Empty as empty:
                 self.logger.debug(f'')
                 self.logger.debug(f'Current Loop Iteration:\ {self.current_loop_iteration}')
-                self.logger.debug(f'Current Numpy Array:\t {np_array.size}')
+                self.logger.debug(f'Current Numpy Array:\t {count}')
                 self.logger.debug(f'Waiting for more messages...')
                 self.logger.debug(f'')
                 time.sleep(0.01)
@@ -93,42 +112,32 @@ class Worker(MessageHandler, multiprocessing.Process):
             except Exception as E:
                 self.logger.debug(f"Empty Queue\t{E}")
 
-        self.counter_messages_total += np_array.size
-        self.counter_messages_period = np_array.size
-        return np_array
+        self.counter_messages_total += count
+        self.counter_messages_period = count
 
-    def insert_data_into_database(self, np_array):
-        df = pd.DataFrame()
-        if np_array.size > 1:
-            try:
-                self.logger.debug(f'Starting to Insert into Database')
-                df = pd.DataFrame(np_array[1:], columns=self.update_fields_list)
-                df.columns = self.header
-                df['symbol'] = df['symbol'].str.decode("utf-8")
-                df['available_regions'] = df['available_regions'].str.decode("utf-8")
-                df['message_contents'] = df['message_contents'].str.decode("utf-8")
-                df['financial_status_indicator'] = df['financial_status_indicator'].str.decode("utf-8")
-                df['timestamp_inserted'] = datetime.now()
-                df = df.drop_duplicates()
-                df = df.sort_values(['ask_time', 'symbol'])
-                # for symbol, df_g in df.groupby(['symbol']):
-                #     df_g.to_sql(name=f"{symbol}_LVL1_Q_V2", con=engine, index=False, if_exists="append")
+        return temp_array
 
-                if self.engine:
-                    df.to_sql(name=self.table_name, con=self.engine, index=False, if_exists="append")
-                    self.logger.debug(f'Completed to Insert into Database')
-                else:
-                    self.logger.debug(f'Couldnt find DB Connection')
-                    del df
-                return
+    def process_data(self, temp_array):
 
-            except Exception as e:
-                self.logger.error(e)
-                try:
-                    df.to_csv(os.path.join('d:\\', f"{datetime.now()}.csv".replace(":", "-")))
-                except:
-                    with open(os.path.join('d:\\', f"{datetime.now()}.csv".replace(":", "-")), "w") as f:
-                        f.write("\n".join(",".join(map(str, x)) for x in (np_array)))
+        df = pd.DataFrame(temp_array, columns=array_columns)
+
+        return df
+
+    def insert_data_into_database(self, df):
+
+        try:
+            self.logger.debug(f'Starting to Insert into Database')
+
+            if self.engine:
+                df.to_sql(name=self.table_name, con=self.engine, index=False, if_exists="append")
+                self.logger.debug(f'Completed to Insert into Database')
+            else:
+                self.logger.debug(f'Couldnt find DB Connection. Not Saving Data')
+                del df
+            return
+
+        except Exception as e:
+            self.logger.error(e)
 
 
     def initialize_counters(self):

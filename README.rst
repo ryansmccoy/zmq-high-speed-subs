@@ -18,7 +18,7 @@ Setup Environment & Run Example  (Windows):
 
     git clone https://github.com/ryansmccoy/zmq-high-speed-subs
     cd zmq-high-speed-subs
-    conda create -n zmq-high-speed-subs python=3.7 -y
+    conda create -n zmq-high-speed-subs python=3.8 pyzmq pandas numpy -y
     activate zmq-high-speed-subs
     pip install -r requirements.txt
 
@@ -28,7 +28,8 @@ Setup Environment & Run Example (Linux):
 
     git clone https://github.com/ryansmccoy/zmq-high-speed-subs
     cd zmq-high-speed-subs
-    conda create -n zmq-high-speed-subs python=3.7 -y
+    conda create -n zmq-high-speed-subs python=3.8 pyzmq pandas numpy -y
+    source activate zmq-high-speed-subs
     pip install -r requirements.txt
 
 To run, open seperate terminal windows, run:

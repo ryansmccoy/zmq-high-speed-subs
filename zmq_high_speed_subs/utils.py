@@ -5,7 +5,6 @@ Copyright (C) 2019 Ryan S. McCoy <github@ryansmccoy.com>
 MIT License
 
 """
-import logging
 import os
 
 from dotenv import load_dotenv
@@ -22,8 +21,6 @@ import pandas as pd
 
 
 class MessageValidator:
-
-
     _update_fields_list = ['Symbol', '7 Day Yield', 'Ask', 'Ask Change',
                            'Ask Market Center', 'Ask Size', 'Ask Time',
                            'Available Regions', 'Average Maturity', 'Bid',
@@ -68,6 +65,7 @@ class FakeFeedCSV:
     def __init__(self, sleep_time: (int or float) = 1.0, filepath=f'zmq_high_speed_subs/test_data.csv'):
         self.filepath = filepath
         self.sleep_time = sleep_time
+
         try:
             df = pd.read_csv(self.filepath)
         except:
@@ -124,8 +122,8 @@ class FakeFeedSQL:
             time.sleep(self.sleep_time)
 
 
-
 import logging
+
 
 class CustomFormatter(logging.Formatter):
     """Logging Formatter to add colors and count warning / errors"""
@@ -151,6 +149,7 @@ class CustomFormatter(logging.Formatter):
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
 
+
 def setup_logging():
     # import coloredlogs, logging
     # coloredlogs.install()
@@ -171,9 +170,10 @@ def initializer(level):
     logger = multiprocessing.log_to_stderr(level)
 
 
-def setup_db_connection(driver='sqlalchemy', echo=False):
+def setup_db_connection(driver='SQL Server', echo=False):
+    engine_url = ""
 
-    if driver == "sqlalchemy":
+    if driver == "SQL Server":
 
         sql_db_connection = (
             f"DRIVER={{ODBC Driver 17 for SQL Server}};"
@@ -184,16 +184,20 @@ def setup_db_connection(driver='sqlalchemy', echo=False):
         )
 
         params = urllib.parse.quote_plus(sql_db_connection)
+        engine_url = f"mssql+pyodbc:///?odbc_connect={params}"
+        engine = create_engine(engine_url, echo=echo, fast_executemany=True)
 
-        engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}", echo=echo, fast_executemany=True)
+    elif driver == "postgres":
 
-        try:
-            engine.connect()
-            return engine
-        except Exception as E:
-            print("\n\tProblem Connecting to Database")
-            print(E)
-            return False
+        engine = create_engine(f'postgresql://{os.getenv("DB_USERNAME")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}/{os.getenv("DB_DATABASE")}', echo=echo, fast_executemany=True)
 
     else:
+        return False
+
+    try:
+        engine.connect()
+        return engine
+    except Exception as E:
+        print("\n\tProblem Connecting to Database")
+        print(E)
         return False
