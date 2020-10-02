@@ -1,7 +1,7 @@
 ===============================
-ZeroMQ - High-Speed Subscribers
+ZeroMQ - High-Speed Subscribers (Black Box Pattern)
 ===============================
-Example of High-Speed Subscriber Patterns in ZeroMQ
+Example of High-Speed Subscribers (Black Box Pattern) in ZeroMQ
 
 .. image:: https://storage.googleapis.com/ryansmccoy/zeromq_high_speed.png
     :width: 700px
